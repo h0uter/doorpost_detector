@@ -8,7 +8,7 @@ from door_post_pose_detector.entities.pointcloud_processor import PointcloudProc
 from door_post_pose_detector.utils.utils import npy2pcd
 from door_post_pose_detector.utils.o3d_arrow import *
 
-def cropped_pointcloud_to_door_post_poses_pipeline(points, vis=False):    
+def cropped_pointcloud_to_door_post_poses_pipeline(points, vis=0):    
 
     processor = PointcloudProcessor()
 
@@ -16,27 +16,27 @@ def cropped_pointcloud_to_door_post_poses_pipeline(points, vis=False):
     poses = []
     pointcloud = npy2pcd(points)
     pointcloud_orig = copy.deepcopy(pointcloud)
-    if vis is True: o3d.visualization.draw_geometries([pointcloud])
+    if vis >= 2: o3d.visualization.draw_geometries([pointcloud])
 
     '''remove statistical outliers'''
     points, pointcloud, index = processor.remove_outliers_around_door_first_pass(pointcloud)
-    if vis is True: display_inlier_outlier(pointcloud, index)
+    if vis >= 2: display_inlier_outlier(pointcloud, index)
 
     '''try to fit a plane to the pointcloud, corresponding to the U shaped door post plane'''
     best_inliers, outliers = processor.fit_plane_to_U_shaped_door_frame(points)
-    if vis is True: plot_points(points, best_inliers, outliers)
+    if vis >= 2: plot_points(points, best_inliers, outliers)
 
     '''remove line corresponding to ground in the U shaped door frame'''
     pointcloud = processor.remove_ground_plane_line(points, best_inliers)
-    if vis is True: o3d.visualization.draw_geometries([pointcloud])
+    if vis >= 2: o3d.visualization.draw_geometries([pointcloud])
 
     '''subsample points to make clustering tractable'''
     pointcloud_small = pointcloud.voxel_down_sample(voxel_size=0.05) # apparently this is to help clustering metho
-    if vis is True: o3d.visualization.draw_geometries([pointcloud_small])
+    if vis >= 2: o3d.visualization.draw_geometries([pointcloud_small])
 
     '''obtain the doorpost locations using clustering and indexing by color'''
     possible_posts, clustered_pointcloud, post_vectors = processor.obtain_door_post_poses_using_clustering(pointcloud)
-    if vis is True: o3d.visualization.draw_geometries([clustered_pointcloud])
+    if vis >= 2: o3d.visualization.draw_geometries([clustered_pointcloud])
 
     best_fit_door_post_a, best_fit_door_post_b = None, None
     best_fit_door_width_error = float(Inf)
@@ -78,9 +78,9 @@ def cropped_pointcloud_to_door_post_poses_pipeline(points, vis=False):
         if best_fit_door_post_b:
             xb, yb = best_fit_door_post_b
             arrow_b = get_arrow([xb, yb, 0.01], vec=post_vectors[1])
-            if vis is True: draw_geometries([FOR, pointcloud_orig, arrow_a, arrow_b])   
+            if vis >= 1: draw_geometries([FOR, pointcloud_orig, arrow_a, arrow_b])   
         else:
-            if vis is True: draw_geometries([FOR, pointcloud_orig, arrow_a])
+            if vis >= 1: draw_geometries([FOR, pointcloud_orig, arrow_a])
 
     return  {
         'poses': poses,

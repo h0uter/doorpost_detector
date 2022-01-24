@@ -17,7 +17,7 @@ def test_run():
             # crop margin 1.5m has lots of problems
             # points = np.load(f'data/door{i}_cropped_m1_5.npy')
         
-        response = cropped_pointcloud_to_door_post_poses_pipeline(points, vis=False)
+        response = cropped_pointcloud_to_door_post_poses_pipeline(points, vis=1)
         print(f">>> dataset {i}: success: {response['success']}, poses: {response['poses']}")
 
 
@@ -29,9 +29,10 @@ def test_pc1_success():
     points = np.load(full_path)
     # points = np.load(f'{path}/data/door1_cropped_m0_8.npy')
     # points = np.load(f'../../data/door1_cropped_m0_8.npy')
-    response = cropped_pointcloud_to_door_post_poses_pipeline(points, vis=False)
+    response = cropped_pointcloud_to_door_post_poses_pipeline(points, vis=0)
     assert response['success'] == True
 
 
 if __name__ == "__main__":
-    test_pc1_success()
+    # test_pc1_success()
+    test_run()
