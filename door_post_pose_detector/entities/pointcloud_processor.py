@@ -9,9 +9,20 @@ import open3d as o3d
 class PointcloudProcessor():
     def __init__(self) -> None:
         self.debug_statements = False
+        self.nb_neigbours = 100
+        self.std_ratio = 0.1
+        self.line1_thresh = 0.1
+        self.max_iteration = 1000
+        self.dbscan_eps = 0.2
+        self.dbscan_min_points = 10
+        self.door_post_line_thresh = 0.01
+        self.door_post_line_max_iteration = 1000
+
 
     def remove_outliers_around_door_first_pass(self, pointcloud:o3d.geometry.PointCloud) -> tuple:
-        cl, index = pointcloud.remove_statistical_outlier(nb_neighbors=100, std_ratio=0.1)
+        cl, index = pointcloud.remove_statistical_outlier(
+            nb_neighbors=self.nb_neigbours, 
+            std_ratio=self.std_ratio)
         # cl, index = pointcloud.remove_radius_outlier(nb_points=40, radius = 0.075)
         # cl, index = pointcloud.remove_statistical_outlier(nb_neighbors=200, std_ratio=0.01)
         # TODO: make this respect the vis setting
@@ -21,7 +32,12 @@ class PointcloudProcessor():
 
     def fit_plane_to_U_shaped_door_frame(self, points:list) -> tuple:
         plane1 = pyrsc.Plane()
-        best_eq, best_inliers = plane1.fit(points, 0.1, maxIteration=1000)
+        best_eq, best_inliers = plane1.fit(
+            points, 
+            thresh=self.line1_thresh, 
+            maxIteration=self.max_iteration
+        )
+        
         set_difference = set(list(range(len(points)))) - set(best_inliers)
         outliers = list(set_difference)
         return best_inliers, outliers
@@ -38,8 +54,13 @@ class PointcloudProcessor():
         return pointcloud
 
     def obtain_door_post_poses_using_clustering(self, pcd_small:o3d.geometry.PointCloud) -> tuple:
-        labels = np.array(pcd_small.cluster_dbscan(
-            eps=0.2, min_points=10, print_progress=self.debug_statements))
+        labels = np.array(
+            pcd_small.cluster_dbscan(
+                eps=self.dbscan_eps, 
+                min_points=self.dbscan_min_points, 
+                print_progress=self.debug_statements
+            )
+        )
 
         max_label = labels.max()
         if self.debug_statements:
@@ -60,14 +81,17 @@ class PointcloudProcessor():
             ind = [i for i, x in enumerate(temp) if x]
             pcd_inlier = pcd_small.select_by_index(ind)
             points = np.asarray(pcd_inlier.points)
-            line = pyrsc.Line()
+            door_post_line = pyrsc.Line()
             # TODO: use A vector to vizualize the fit
             # print(f"points: {points}")
 
             # fix a weird crash if points are too small due to random inlier detection
             if points.shape[0] > 2:
-                A, B, best_inliers = line.fit(
-                    points, 0.01, maxIteration=1000)
+                A, B, best_inliers = door_post_line.fit(
+                    points, 
+                    thresh=self.door_post_line_thresh ,
+                    maxIteration=self.door_post_line_max_iteration
+                )
             else:
                 return False, False, False
 
