@@ -8,7 +8,7 @@ import open3d as o3d
 
 class PointcloudProcessor():
     def __init__(self) -> None:
-        pass
+        self.debug_statements = False
 
     def remove_outliers_around_door_first_pass(self, pointcloud:o3d.geometry.PointCloud) -> tuple:
         cl, index = pointcloud.remove_statistical_outlier(nb_neighbors=100, std_ratio=0.1)
@@ -39,10 +39,11 @@ class PointcloudProcessor():
 
     def obtain_door_post_poses_using_clustering(self, pcd_small:o3d.geometry.PointCloud) -> tuple:
         labels = np.array(pcd_small.cluster_dbscan(
-            eps=0.2, min_points=10, print_progress=True))
+            eps=0.2, min_points=10, print_progress=self.debug_statements))
 
         max_label = labels.max()
-        print("pointcloud has %d clusters" % (max_label + 1))
+        if self.debug_statements:
+            print("pointcloud has %d clusters" % (max_label + 1))
         
         possible_posts = []
         post_vectors = []
@@ -69,6 +70,8 @@ class PointcloudProcessor():
                 # print(f"possible_posts: {possible_posts[-1]}")
                 post_vectors.append(A)
         
-        print(f"possible_posts: {possible_posts}")
+        if self.debug_statements: 
+            print(f"possible_posts: {possible_posts}")
+
         clustered_pointcloud = pcd_small
         return possible_posts, clustered_pointcloud, post_vectors
