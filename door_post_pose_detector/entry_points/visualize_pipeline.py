@@ -1,6 +1,7 @@
 import open3d as o3d
 import matplotlib.pyplot as plt
 import numpy as np
+# from open3d.cpu.pybind.geometry import Pointcloud
 
 # from ..utils.utils import npy2pcd
 
@@ -41,7 +42,7 @@ def plot_points(points:list, best_inliers:list, outliers:list) -> None:
     set_axes_equal(ax)
     plt.show()
 
-def display_inlier_outlier(cloud:o3d.geometry.Pointcloud, ind:list) -> None:
+def display_inlier_outlier(cloud:o3d.geometry.PointCloud, ind:list) -> None:
     '''displays the result of the o3d outlier removal'''
     inlier_cloud = cloud.select_by_index(ind)
     outlier_cloud = cloud.select_by_index(ind, invert=True)
