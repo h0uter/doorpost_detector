@@ -62,8 +62,14 @@ class PointcloudProcessor():
             points = np.asarray(pcd_inlier.points)
             line = pyrsc.Line()
             # TODO: use A vector to vizualize the fit
-            A, B, best_inliers = line.fit(
-                points, 0.01, maxIteration=1000)
+            # print(f"points: {points}")
+
+            # fix a weird crash if points are too small due to random inlier detection
+            if points.shape[0] > 2:
+                A, B, best_inliers = line.fit(
+                    points, 0.01, maxIteration=1000)
+            else:
+                return False, False, False
 
             if np.abs(A[2]) > 0.9:
                 possible_posts.append([B[0], B[1]])

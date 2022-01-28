@@ -14,17 +14,19 @@ from door_post_pose_detector.utils.o3d_arrow import *
 def cropped_pointcloud_to_door_post_poses_usecase(points:list, vis=0):    
     debug_statements = False
     success = False
+    N = 0
+    max_attempts = 10
+    processor = PointcloudProcessor()
 
-    while not success:
-        processor = PointcloudProcessor()
+    while not success and N < max_attempts:
+
 
         points_copy = copy.deepcopy(points)
-
-        
         poses = []
         # points = copy.deepcopy(points_copy)
-        pointcloud = npy2pcd(points_copy)
-        pointcloud_orig = copy.deepcopy(pointcloud)
+        pointcloud_yolo = npy2pcd(points_copy)
+        pointcloud_orig = copy.deepcopy(pointcloud_yolo)
+        pointcloud = copy.deepcopy(pointcloud_yolo)
         if vis >= 2: o3d.visualization.draw_geometries([pointcloud])
 
         '''remove statistical outliers'''
@@ -46,6 +48,9 @@ def cropped_pointcloud_to_door_post_poses_usecase(points:list, vis=0):
         '''obtain the doorpost locations using clustering and indexing by color'''
         possible_posts, clustered_pointcloud, post_vectors = processor.obtain_door_post_poses_using_clustering(pointcloud)
         if vis >= 2: o3d.visualization.draw_geometries([clustered_pointcloud])
+
+        if possible_posts == False:
+            continue
 
         best_fit_door_post_a, best_fit_door_post_b = None, None
         best_fit_door_width_error = float(Inf)
@@ -82,6 +87,7 @@ def cropped_pointcloud_to_door_post_poses_usecase(points:list, vis=0):
             if poses[1] > poses[3]:
                 poses = [poses[2], poses[3], poses[0], poses[1]]
         else:
+            N += 1
             success = False
             print("Could not find door posts, trying again")
             continue

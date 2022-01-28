@@ -34,10 +34,6 @@ def test_pointcloud0_response_poses():
     for response in responses:
         print(f"poses: {response['poses']}")
         assert response['poses'] == pytest.approx([ 0.9718209, -0.3933652, 0.93043636, 0.58672456], abs=acc_x)
-        # assert response['poses'][0] == pytest.approx(1.92464301, abs=acc_x)
-        # assert response['poses'][1] == pytest.approx(-0.86583511, abs=acc_y)
-        # assert response['poses'][2] == pytest.approx(1.83260872, abs=acc_x)
-        # assert response['poses'][3] == pytest.approx(0.15936917, abs=acc_y)
 
 def pointcloudN_response_poses(dataset_num, means, acc_x, acc_y):
     '''test 10 times if the accuracy is consistent'''
@@ -96,4 +92,4 @@ def test_pointcloud1_response_success():
 
 if __name__ == "__main__":
     # test_pointcloud1_response_success()
-    test_pointcloud0_response_poses()
+    test_pointcloud5_response_poses()
