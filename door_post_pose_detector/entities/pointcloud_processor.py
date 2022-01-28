@@ -9,6 +9,8 @@ import open3d as o3d
 class PointcloudProcessor():
     def __init__(self) -> None:
         self.debug_statements = False
+
+        # all hyper parameters for the pipeline
         self.nb_neigbours = 100
         self.std_ratio = 0.1
         self.line1_thresh = 0.1
@@ -18,14 +20,12 @@ class PointcloudProcessor():
         self.door_post_line_thresh = 0.01
         self.door_post_line_max_iteration = 1000
 
-
     def remove_outliers_around_door_first_pass(self, pointcloud:o3d.geometry.PointCloud) -> tuple:
         cl, index = pointcloud.remove_statistical_outlier(
             nb_neighbors=self.nb_neigbours, 
             std_ratio=self.std_ratio)
         # cl, index = pointcloud.remove_radius_outlier(nb_points=40, radius = 0.075)
         # cl, index = pointcloud.remove_statistical_outlier(nb_neighbors=200, std_ratio=0.01)
-        # TODO: make this respect the vis setting
         pointcloud_inliers = pointcloud.select_by_index(index)
         inlier_points = np.asarray(pointcloud_inliers.points)
         return inlier_points, pointcloud, index

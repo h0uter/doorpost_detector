@@ -14,6 +14,7 @@ from door_post_pose_detector.utils.o3d_arrow import *
 def cropped_pointcloud_to_door_post_poses_usecase(points:list, vis=0):    
     debug_statements = False
     success = False
+    certainty = 0.0
     N = 0
     max_attempts = 10
     processor = PointcloudProcessor()
@@ -51,6 +52,8 @@ def cropped_pointcloud_to_door_post_poses_usecase(points:list, vis=0):
 
         if possible_posts == False:
             continue
+
+        # print(f"postvectors {post_vectors}")
 
         best_fit_door_post_a, best_fit_door_post_b = None, None
         best_fit_door_width_error = float(Inf)
@@ -109,7 +112,90 @@ def cropped_pointcloud_to_door_post_poses_usecase(points:list, vis=0):
             else:
                 if vis >= 1: draw_geometries([FOR, pointcloud_orig, arrow_a])
 
+        def unit_vector(vector):
+            """ Returns the unit vector of the vector.  """
+            return vector / np.linalg.norm(vector)
+
+        def angle_between(v1, v2):
+            """ Returns the angle in radians between vectors 'v1' and 'v2'::
+
+                    >>> angle_between((1, 0, 0), (0, 1, 0))
+                    1.5707963267948966
+                    >>> angle_between((1, 0, 0), (1, 0, 0))
+                    0.0
+                    >>> angle_between((1, 0, 0), (-1, 0, 0))
+                    3.141592653589793
+            """
+            v1_u = unit_vector(v1)
+            v2_u = unit_vector(v2)
+            return np.arccos(np.clip(np.dot(v1_u, v2_u), -1.0, 1.0))
+        
+        # certainty = np.pi - angle_between([1,0,0], post_vectors[0])/ (np.pi), np.pi - angle_between([1,0,0], post_vectors[1])/(np.pi)
+        angle_1 = angle_between([0,0,-1], post_vectors[0])
+        angle_2 = angle_between([0,0,-1], post_vectors[1])
+        print(f"angle 1: {angle_1}, angle 2: {angle_2}")
+        if 0.5* np.pi < angle_1 < np.pi:
+            angle_1 = abs(angle_1 - np.pi)
+        if 0.5* np.pi < angle_2 < np.pi:
+            angle_2 = abs(angle_2 - np.pi)
+
+        certainty = angle_1/(np.pi), angle_2/(np.pi)
+
+        if vis >= 1:
+            draw_geometries([FOR, pointcloud_orig, arrow_a, arrow_b])
+
+        if vis >= 2:
+            o3d.visualization.draw_geometries([pointcloud])
+
+        if vis >= 3:
+            o3d.visualization.draw_geometries([clustered_pointcloud])
+
+        if vis >= 4:
+            o3d.visualization.draw_geometries([pointcloud_small])
+
+        if vis >= 5:
+            o3d.visualization.draw_geometries([arrow_a, arrow_b])
+
+        if vis >= 6:
+            o3d.visualization.draw_geometries([pointcloud_orig])
+
+        if vis >= 7:
+            o3d.visualization.draw_geometries([pointcloud])
+
+        if vis >= 8:
+            o3d.visualization.draw_geometries([clustered_pointcloud])
+
+        if vis >= 9:
+            o3d.visualization.draw_geometries([pointcloud_small])
+
+        if vis >= 10:
+            o3d.visualization.draw_geometries([arrow_a, arrow_b])
+
+        if vis >= 11:
+            o3d.visualization.draw_geometries([pointcloud_orig])
+
+        if vis >= 12:
+            o3d.visualization.draw_geometries([pointcloud])
+
+        if vis >= 13:
+            o3d.visualization.draw_geometries([clustered_pointcloud])
+
+        if vis >= 14:
+            o3d.visualization.draw_geometries([pointcloud_small])
+
+        if vis >= 15:
+            o3d.visualization.draw_geometries([arrow_a, arrow_b])
+
+        if vis >= 16:
+            o3d.visualization.draw_geometries([pointcloud_orig])
+
+        if vis >= 17:
+            o3d.visualization
+        certainty = 1 - angle_1/ (np.pi), 1 - angle_2/(np.pi)
+
+
     return  {
         'poses': poses,
         'success': success,
+        'certainty': certainty
     }

@@ -46,7 +46,7 @@ def pointcloudN_response_poses(dataset_num, means, acc_x, acc_y):
         full_path = os.path.join(two_up, 'data', f'door{dataset_num}_cropped_m0_8.npy')
         points = np.load(full_path)
         response = cropped_pointcloud_to_door_post_poses_usecase(points, vis=0)
-        print(f">>> trial {i}: success: {response['success']}, poses: {response['poses']}")
+        print(f">>> trial {i}: success: {response['success']}, poses: {response['poses']}, certainty: {response['certainty']}")
         responses.append(response)
         poses.append(response['poses'])
         
@@ -54,7 +54,7 @@ def pointcloudN_response_poses(dataset_num, means, acc_x, acc_y):
     print(f"mean in pose estimates {np.mean(poses, axis=0)}")
     
     for response in responses:
-        print(f"poses: {response['poses']}")
+        # print(f"poses: {response['poses']}")
         assert response['poses'][0] == pytest.approx(means[0], abs=acc_x)
         assert response['poses'][1] == pytest.approx(means[1], abs=acc_y)
         assert response['poses'][2] == pytest.approx(means[2], abs=acc_x)
@@ -91,5 +91,5 @@ def test_pointcloud1_response_success():
 # def 
 
 if __name__ == "__main__":
-    # test_pointcloud1_response_success()
-    test_pointcloud5_response_poses()
+    test_pointcloud4_response_poses()
+    # test_pointcloud5_response_poses()
