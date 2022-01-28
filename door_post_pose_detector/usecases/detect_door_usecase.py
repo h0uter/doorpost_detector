@@ -23,20 +23,20 @@ def cropped_pointcloud_to_door_post_poses_usecase(points:list, vis=0):
         
         poses = []
         # points = copy.deepcopy(points_copy)
-        pointcloud = npy2pcd(points)
+        pointcloud = npy2pcd(points_copy)
         pointcloud_orig = copy.deepcopy(pointcloud)
         if vis >= 2: o3d.visualization.draw_geometries([pointcloud])
 
         '''remove statistical outliers'''
-        points, pointcloud, index = processor.remove_outliers_around_door_first_pass(pointcloud)
+        points_copy, pointcloud, index = processor.remove_outliers_around_door_first_pass(pointcloud)
         if vis >= 2: display_inlier_outlier(pointcloud, index)
 
         '''try to fit a plane to the pointcloud, corresponding to the U shaped door post plane'''
-        best_inliers, outliers = processor.fit_plane_to_U_shaped_door_frame(points)
-        if vis >= 2: plot_points(points, best_inliers, outliers)
+        best_inliers, outliers = processor.fit_plane_to_U_shaped_door_frame(points_copy)
+        if vis >= 2: plot_points(points_copy, best_inliers, outliers)
 
         '''remove line corresponding to ground in the U shaped door frame'''
-        pointcloud = processor.remove_ground_plane_line(points, best_inliers)
+        pointcloud = processor.remove_ground_plane_line(points_copy, best_inliers)
         if vis >= 2: o3d.visualization.draw_geometries([pointcloud])
 
         '''subsample points to make clustering tractable'''
