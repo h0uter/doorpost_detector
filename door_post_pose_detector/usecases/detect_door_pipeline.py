@@ -8,7 +8,7 @@ from door_post_pose_detector.entities.pointcloud_processor import PointcloudProc
 from door_post_pose_detector.utils.utils import npy2pcd
 from door_post_pose_detector.utils.o3d_arrow import *
 
-def cropped_pointcloud_to_door_post_poses_pipeline(points, vis=0):    
+def cropped_pointcloud_to_door_post_poses_pipeline(points:list, vis=0):    
 
     processor = PointcloudProcessor()
 

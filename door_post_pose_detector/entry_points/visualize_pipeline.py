@@ -13,8 +13,8 @@ def set_axes_equal(ax: plt.Axes):
     and `ax.set_aspect('equal')` don't work on 3D.
     """
 
-    def _set_axes_radius(ax, origin, radius):
-        x, y, z = origin
+    def _set_axes_radius(ax:plt.Axes, origin:tuple, radius:float) -> None:
+        x, y, z = origin 
         ax.set_xlim3d([x - radius, x + radius])
         ax.set_ylim3d([y - radius, y + radius])
         ax.set_zlim3d([z - radius, z + radius])
@@ -28,7 +28,7 @@ def set_axes_equal(ax: plt.Axes):
     radius = 0.5 * np.max(np.abs(limits[:, 1] - limits[:, 0]))
     _set_axes_radius(ax, origin, radius)
 
-def plot_points(points, best_inliers, outliers):
+def plot_points(points:list, best_inliers:list, outliers:list) -> None:
     # TODO: update to not take the points argument
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
@@ -41,7 +41,7 @@ def plot_points(points, best_inliers, outliers):
     set_axes_equal(ax)
     plt.show()
 
-def display_inlier_outlier(cloud, ind):
+def display_inlier_outlier(cloud:o3d.geometry.Pointcloud, ind:list) -> None:
     '''displays the result of the o3d outlier removal'''
     inlier_cloud = cloud.select_by_index(ind)
     outlier_cloud = cloud.select_by_index(ind, invert=True)

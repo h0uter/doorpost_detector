@@ -66,7 +66,7 @@ import numpy as np
 
 #     return door_pose
 
-def npy2pcd(points):
+def npy2pcd(points:list) -> o3d.geometry.PointCloud:
     point_cloud = o3d.geometry.PointCloud()  # instantiate point cloud
     point_cloud.points = o3d.utility.Vector3dVector(
         points)  # fill pointcloud with numpy points

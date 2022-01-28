@@ -4,13 +4,13 @@ import matplotlib.pyplot as plt
 
 from door_post_pose_detector.utils.o3d_arrow import *
 from door_post_pose_detector.utils.utils import npy2pcd
-
+import open3d as o3d
 
 class PointcloudProcessor():
     def __init__(self) -> None:
         pass
 
-    def remove_outliers_around_door_first_pass(self, pointcloud):
+    def remove_outliers_around_door_first_pass(self, pointcloud:o3d.geometry.PointCloud) -> tuple:
         cl, index = pointcloud.remove_statistical_outlier(nb_neighbors=100, std_ratio=0.1)
         # cl, index = pointcloud.remove_radius_outlier(nb_points=40, radius = 0.075)
         # cl, index = pointcloud.remove_statistical_outlier(nb_neighbors=200, std_ratio=0.01)
@@ -19,7 +19,7 @@ class PointcloudProcessor():
         inlier_points = np.asarray(pointcloud_inliers.points)
         return inlier_points, pointcloud, index
 
-    def fit_plane_to_U_shaped_door_frame(self, points):
+    def fit_plane_to_U_shaped_door_frame(self, points:list) -> tuple:
         plane1 = pyrsc.Plane()
         best_eq, best_inliers = plane1.fit(points, 0.1, maxIteration=1000)
         set_difference = set(list(range(len(points)))) - set(best_inliers)
@@ -27,7 +27,7 @@ class PointcloudProcessor():
         return best_inliers, outliers
 
     
-    def remove_ground_plane_line(self, points, best_inliers):
+    def remove_ground_plane_line(self, points:list, best_inliers:list) -> o3d.geometry.PointCloud:
         ''' removes the ground plane using spots height '''
         dpoints = points[best_inliers]
 
@@ -37,7 +37,7 @@ class PointcloudProcessor():
         pointcloud = npy2pcd(best_points)
         return pointcloud
 
-    def obtain_door_post_poses_using_clustering(self, pcd_small):
+    def obtain_door_post_poses_using_clustering(self, pcd_small:o3d.geometry.PointCloud) -> tuple:
         labels = np.array(pcd_small.cluster_dbscan(
             eps=0.2, min_points=10, print_progress=True))
 
