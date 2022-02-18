@@ -29,6 +29,8 @@ def get_ground_truth():
     # path = os.path.abspath(".")
     # path = os.path.join("")
 
+    ground_truth = {}
+
     for i in range(0, 7):
         points = None
         if i == 0:
@@ -45,8 +47,25 @@ def get_ground_truth():
         picked_points = pick_points(points, i)
         # response = cropped_pointcloud_to_door_post_poses_usecase(points, vis=0)
         print(
-            f">>> dataset {i}: picked points = {picked_points}"
+            f">>> dataset {i}: picked points = {points[picked_points]}"
         )
+        ground_truth[i] = points[picked_points]
+    
+    for i in range(len(ground_truth)):
+        if len(ground_truth[i]) < 2:
+            print(f">>> dataset {i}: ground truth not found")
+        else:
+            print(
+                f"""
+                >>> dataset {i}: ground truth = 
+                {ground_truth[i][0]}
+                {ground_truth[i][1]}
+                """
+            )
+
+
+    return ground_truth
+    
 
 if __name__ == "__main__":
     # test_pc1_success()
