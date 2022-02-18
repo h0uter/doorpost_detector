@@ -19,7 +19,8 @@ def cropped_pointcloud_to_door_post_poses_usecase(points: list, vis=0):
     N = 0
     max_attempts = 10
     processor = PointcloudProcessor()
-
+    
+    # FIXME this condition is not triggered sometimes
     while not success and N < max_attempts:
 
         points_copy = copy.deepcopy(points)
@@ -67,6 +68,8 @@ def cropped_pointcloud_to_door_post_poses_usecase(points: list, vis=0):
             o3d.visualization.draw_geometries([clustered_pointcloud])
 
         if possible_posts == False:
+            N += 1
+            success = False
             continue
 
         # print(f"postvectors {post_vectors}")
@@ -113,10 +116,11 @@ def cropped_pointcloud_to_door_post_poses_usecase(points: list, vis=0):
             """Order door posts so the left one (lowest x coord) always comes first."""
             if poses[1] > poses[3]:
                 poses = [poses[2], poses[3], poses[0], poses[1]]
+        
         else:
             N += 1
             success = False
-            print("Could not find door posts, trying again")
+            print("Could not find door posts, trying again (attempt {N})")
             continue
 
         if debug_statements:

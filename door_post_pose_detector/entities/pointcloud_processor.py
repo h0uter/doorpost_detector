@@ -6,6 +6,10 @@ from door_post_pose_detector.utils.o3d_arrow import *
 from door_post_pose_detector.utils.utils import npy2pcd
 import open3d as o3d
 
+import logging
+
+# logging.basicConfig(level=logging.DEBUG)
+
 
 class PointcloudProcessor:
     def __init__(self) -> None:
@@ -24,8 +28,9 @@ class PointcloudProcessor:
     def remove_outliers_around_door_first_pass(
         self, pointcloud: o3d.geometry.PointCloud
     ) -> tuple:
+        logging.debug(f"removing outliers_around_door_first_pass")
         cl, index = pointcloud.remove_statistical_outlier(
-            nb_neighbors=self.nb_neigbours, std_ratio=self.std_ratio
+            nb_neighbors=self.nb_neigbours, std_ratio=self.std_ratio, print_progress=False
         )
         # cl, index = pointcloud.remove_radius_outlier(nb_points=40, radius = 0.075)
         # cl, index = pointcloud.remove_statistical_outlier(nb_neighbors=200, std_ratio=0.01)
@@ -34,6 +39,8 @@ class PointcloudProcessor:
         return inlier_points, pointcloud, index
 
     def fit_plane_to_U_shaped_door_frame(self, points: list) -> tuple:
+        logging.debug(f"fit_plane_to_U_shaped_door_frame")
+
         plane1 = pyrsc.Plane()
         best_eq, best_inliers = plane1.fit(
             points, thresh=self.line1_thresh, maxIteration=self.max_iteration
@@ -46,7 +53,8 @@ class PointcloudProcessor:
     def remove_ground_plane_line(
         self, points: list, best_inliers: list
     ) -> o3d.geometry.PointCloud:
-        """ removes the ground plane using spots height """
+        logging.debug(f"removing the ground plane using spots height")
+
         dpoints = points[best_inliers]
 
         # change to expected hight of spot
@@ -58,6 +66,9 @@ class PointcloudProcessor:
     def obtain_door_post_poses_using_clustering(
         self, pcd_small: o3d.geometry.PointCloud
     ) -> tuple:
+
+        logging.debug(f"obtain_door_post_poses_using_clustering")
+
         labels = np.array(
             pcd_small.cluster_dbscan(
                 eps=self.dbscan_eps,
@@ -67,8 +78,10 @@ class PointcloudProcessor:
         )
 
         max_label = labels.max()
-        if self.debug_statements:
-            print("pointcloud has %d clusters" % (max_label + 1))
+        
+        logging.debug(f"pointcloud has {max_label + 1} clusters")
+        # if self.debug_statements:
+        #     print("pointcloud has %d clusters" % (max_label + 1))
 
         possible_posts = []
         post_vectors = []
@@ -106,8 +119,10 @@ class PointcloudProcessor:
                 # print(f"possible_posts: {possible_posts[-1]}")
                 post_vectors.append(A)
 
-        if self.debug_statements:
-            print(f"possible_posts: {possible_posts}")
+        logging.debug(f"possible_posts: {possible_posts}")
+
+        # if self.debug_statements:
+            # print(f"possible_posts: {possible_posts}")
 
         clustered_pointcloud = pcd_small
         return possible_posts, clustered_pointcloud, post_vectors
