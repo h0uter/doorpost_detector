@@ -35,7 +35,7 @@ import numpy as np
 # def crop_pointcloud(pc_msg, crop_target, crop_margin):
 #     if pc_msg == None:
 #         pc_msg = PointCloud2()
-    
+
 #     # pc = pc_msg2npy(pc_msg)
 #     pc = rnp.numpify(pc_msg)
 
@@ -49,7 +49,7 @@ import numpy as np
 
 #   # unComment to return as ROS msg
 #   # cropped_pc_msg = npy2pc_msg(pc_msg, cropped_pc)
-#   # return cropped_pc_msg 
+#   # return cropped_pc_msg
 #     return cropped_pc
 
 
@@ -60,15 +60,17 @@ import numpy as np
 
 #     # HACK: calc door pose from two points instead of taking first post
 #     door_pose.x = door_info.first_post_lin_x
-#     door_pose.y = door_info.first_post_lin_y 
+#     door_pose.y = door_info.first_post_lin_y
 #     # TODO: calc the door pose angle from the above.
 #     door_pose.theta = 0.0
 
 #     return door_pose
 
-def npy2pcd(points:list) -> o3d.geometry.PointCloud:
+
+def npy2pcd(points: list) -> o3d.geometry.PointCloud:
     point_cloud = o3d.geometry.PointCloud()  # instantiate point cloud
     point_cloud.points = o3d.utility.Vector3dVector(
-        points)  # fill pointcloud with numpy points
+        points
+    )  # fill pointcloud with numpy points
     # TODO: make this respect the vis setting
     return point_cloud
