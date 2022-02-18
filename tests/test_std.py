@@ -6,13 +6,6 @@ from door_post_pose_detector.usecases.detect_door_usecase import (
     cropped_pointcloud_to_door_post_poses_usecase,
 )
 
-# content of test_sample.py
-def func2(x):
-    return x + 1
-
-
-def test_answer2():
-    assert func2(3) == 4
 
 
 def test_pointcloud0_response_poses():
