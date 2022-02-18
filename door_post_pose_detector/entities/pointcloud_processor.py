@@ -9,6 +9,7 @@ import open3d as o3d
 import logging
 
 # logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 
 
 class PointcloudProcessor:
@@ -73,7 +74,7 @@ class PointcloudProcessor:
             pcd_small.cluster_dbscan(
                 eps=self.dbscan_eps,
                 min_points=self.dbscan_min_points,
-                print_progress=self.debug_statements,
+                print_progress=False,
             )
         )
 

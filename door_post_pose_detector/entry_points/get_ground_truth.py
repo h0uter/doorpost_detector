@@ -5,17 +5,16 @@ import open3d as o3d
 from door_post_pose_detector.utils.utils import npy2pcd
 
 
-
 def pick_points(points: list, dataset_idx):
     pcd = npy2pcd(points)
     print("")
-    print(
-        "1) Please pick at least three correspondences using [shift + left click]"
-    )
+    print("1) Please pick at least three correspondences using [shift + left click]")
     print("   Press [shift + right click] to undo point picking")
     print("2) After picking points, press 'Q' to close the window")
     vis = o3d.visualization.VisualizerWithEditing()
-    vis.create_window(window_name=f"Pick ground truth doorposts for dataset {dataset_idx}")
+    vis.create_window(
+        window_name=f"Pick ground truth doorposts for dataset {dataset_idx}"
+    )
     vis.add_geometry(pcd)
     vis.run()  # user picks points
     vis.destroy_window()
@@ -23,11 +22,10 @@ def pick_points(points: list, dataset_idx):
     return vis.get_picked_points()
 
 
-
 def get_ground_truth():
     # points = np.load('data/robot_cropped_pointcloud.npy')
     # path = os.path.abspath(".")
-    # path = os.path.join("")
+    # path = os.path.join("") 
 
     ground_truth = {}
 
@@ -43,14 +41,11 @@ def get_ground_truth():
             # crop margin 1.5m has lots of problems
             # points = np.load(f'data/door{i}_cropped_m1_5.npy')
 
-
         picked_points = pick_points(points, i)
         # response = cropped_pointcloud_to_door_post_poses_usecase(points, vis=0)
-        print(
-            f">>> dataset {i}: picked points = {points[picked_points]}"
-        )
+        print(f">>> dataset {i}: picked points = {points[picked_points]}")
         ground_truth[i] = points[picked_points]
-    
+
     for i in range(len(ground_truth)):
         if len(ground_truth[i]) < 2:
             print(f">>> dataset {i}: ground truth not found")
@@ -63,9 +58,8 @@ def get_ground_truth():
                 """
             )
 
-
     return ground_truth
-    
+
 
 if __name__ == "__main__":
     # test_pc1_success()

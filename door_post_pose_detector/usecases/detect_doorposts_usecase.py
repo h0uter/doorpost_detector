@@ -1,10 +1,8 @@
-from re import S
 import numpy as np
-from numpy.core.numeric import Inf
+# from numpy.core.numeric import Inf
 import open3d as o3d
 import copy
 
-from sympy import false
 
 from door_post_pose_detector.entry_points.visualize_pipeline import *
 from door_post_pose_detector.entities.pointcloud_processor import PointcloudProcessor
@@ -12,6 +10,7 @@ from door_post_pose_detector.utils.utils import npy2pcd
 from door_post_pose_detector.utils.o3d_arrow import *
 
 
+# fixme write this to class
 def cropped_pointcloud_to_door_post_poses_usecase(points: list, vis=0):
     debug_statements = False
     success = False
@@ -75,7 +74,7 @@ def cropped_pointcloud_to_door_post_poses_usecase(points: list, vis=0):
         # print(f"postvectors {post_vectors}")
 
         best_fit_door_post_a, best_fit_door_post_b = None, None
-        best_fit_door_width_error = float(Inf)
+        best_fit_door_width_error = float("Inf")
         for posta in possible_posts:
             for postb in possible_posts:
 
@@ -120,7 +119,7 @@ def cropped_pointcloud_to_door_post_poses_usecase(points: list, vis=0):
         else:
             N += 1
             success = False
-            print("Could not find door posts, trying again (attempt {N})")
+            print(f"Could not find door posts, trying again (attempt {N})")
             continue
 
         if debug_statements:
