@@ -1,10 +1,10 @@
-from door_post_pose_detector.usecases.detect_doorposts_usecase import (
+from doorpost_pose_detector.usecases.detect_doorposts_usecase import (
     cropped_pointcloud_to_door_post_poses_usecase,
 )
 import numpy as np
 import os
 
-from door_post_pose_detector.utils.utils import npy2pcd
+from doorpost_pose_detector.utils.utils import npy2pcd
 
 
 

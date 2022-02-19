@@ -2,7 +2,7 @@ import numpy as np
 import os
 import pytest
 
-from door_post_pose_detector.usecases.detect_doorposts_usecase import (
+from doorpost_pose_detector.usecases.detect_doorposts_usecase import (
     cropped_pointcloud_to_door_post_poses_usecase,
 )
 

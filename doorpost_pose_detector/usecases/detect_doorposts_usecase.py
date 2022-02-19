@@ -4,10 +4,10 @@ import open3d as o3d
 import copy
 
 
-from door_post_pose_detector.entry_points.visualize_pipeline import *
-from door_post_pose_detector.entities.pointcloud_processor import PointcloudProcessor
-from door_post_pose_detector.utils.utils import npy2pcd
-from door_post_pose_detector.utils.o3d_arrow import *
+from doorpost_pose_detector.entry_points.visualize_pipeline import *
+from doorpost_pose_detector.entities.pointcloud_processor import PointcloudProcessor
+from doorpost_pose_detector.utils.utils import npy2pcd
+from doorpost_pose_detector.utils.o3d_arrow import *
 
 
 # fixme write this to class
