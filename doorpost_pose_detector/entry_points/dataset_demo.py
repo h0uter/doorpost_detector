@@ -7,7 +7,6 @@ import os
 from doorpost_pose_detector.utils.utils import npy2pcd
 
 
-
 def test_run():
     # points = np.load('data/robot_cropped_pointcloud.npy')
     path = os.path.abspath(".")
@@ -29,7 +28,6 @@ def test_run():
         )
 
 
-
 def test_pc1_success():
     path = os.path.abspath(".")
     full_path = os.path.join(path, "data", "door1_cropped_m0_8.npy")
@@ -44,4 +42,3 @@ def test_pc1_success():
 if __name__ == "__main__":
     # test_pc1_success()
     test_run()
-
