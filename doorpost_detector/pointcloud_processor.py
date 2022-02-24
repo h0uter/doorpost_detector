@@ -74,7 +74,7 @@ class PointcloudProcessor:
 
         dpoints = points[best_inliers]  # type: ignore
 
-        # change to expected hight of spot
+        # change to expected height of spot
         not_plane = dpoints[:, 2] > np.min(dpoints[:, 2]) + 0.1
         best_points = dpoints[not_plane]
         pcd = npy2pcd(best_points)
@@ -116,8 +116,6 @@ class PointcloudProcessor:
             pcd_inlier = pcd_small.select_by_index(ind)
             points = np.asarray(pcd_inlier.points)
             door_post_line = pyrsc.Line()
-            # TODO: use A vector to vizualize the fit
-            # print(f"points: {points}")
 
             # fix a weird crash if points are too small due to random inlier detection
             if points.shape[0] > 2:
@@ -158,6 +156,7 @@ class PointcloudProcessor:
             v2_u = unit_vector(v2)
             return np.arccos(np.clip(np.dot(v1_u, v2_u), -1.0, 1.0))
 
+        # BUG: this certainty measure is good near 0.0 and near 1.0
         angle_1 = angle_between([0, 0, -1], post_vectors[0])
         angle_2 = angle_between([0, 0, -1], post_vectors[1])
         print(f"angle 1: {angle_1}, angle 2: {angle_2}")

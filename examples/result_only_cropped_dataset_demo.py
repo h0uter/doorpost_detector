@@ -17,14 +17,14 @@ def test_run():
             path = os.path.join("data", f"door{i}_cropped_m0_8.npy")
 
             # crop margin 1.5m has lots of problems
-            path = os.path.join("data", f"door{i}_cropped_m1_5.npy")
+            # path = os.path.join("data", f"door{i}_cropped_m1_5.npy")
 
             points = np.load(path)
 
         response = dpd.doorpost_pose_from_cropped_pointcloud_usecase(
             points, vis=VizLVL.RESULT_ONLY
         )
-        print(f">>> dataset {i}: success: {response.success}, poses: {response.poses}")
+        print(f">>> dataset {i}: success: {response.success}, poses: {response.poses}, certainty: {response.certainty}")
 
 
 if __name__ == "__main__":

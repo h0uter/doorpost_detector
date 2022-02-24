@@ -17,12 +17,13 @@ class Response:
 
 
 # TODO: split into multiple functions
+# TODO: remove vizualation
 def doorpost_pose_from_cropped_pointcloud_usecase(
     points: list, vis: VizLVL = VizLVL.NONE
 ) -> Response:
     debug_statements = False
     success = False
-    certainty = 0.0
+    certainty = (0.0, 0.0)
     N = 0
     max_attempts = 5
     poses = []
@@ -106,15 +107,12 @@ def doorpost_pose_from_cropped_pointcloud_usecase(
             print(f"Could not find door posts, trying again (attempt {N})")
             continue
 
-        if debug_statements:
-            print(f">>> success of pipeline: {success}, poses: {poses}")
-
         if vis >= VizLVL.RESULT_ONLY:
             vizualisation.display_end_result(
                 best_fit_doorpost_a, best_fit_doorpost_b, post_vectors, pcd_orig
             )
 
-    certainty = processor.determine_certainty_from_angle(post_vectors)
+        certainty = processor.determine_certainty_from_angle(post_vectors)
     return Response(success, poses, certainty)
 
 
