@@ -2,10 +2,9 @@ import numpy as np
 import os
 import pytest
 
-from doorpost_detector.api import (
-    doorpost_pose_from_cropped_pointcloud_usecase,
-)
+from doorpost_detector.utils.viz_lvl import VizLVL
 
+from doorpost_detector.api import doorpost_pose_from_cropped_pointcloud_usecase
 
 
 def test_pointcloud0_response_poses():
@@ -20,7 +19,9 @@ def test_pointcloud0_response_poses():
         two_up = os.path.abspath(os.path.join(__file__, "../.."))
         full_path = os.path.join(two_up, "data", "door0_cropped.npy")
         points = np.load(full_path)
-        response = doorpost_pose_from_cropped_pointcloud_usecase(points, vis=0)
+        response = doorpost_pose_from_cropped_pointcloud_usecase(
+            points, vis=VizLVL.NONE
+        )
         print(
             f">>> trial {i}: success: {response['success']}, poses: {response['poses']}"
         )
@@ -47,22 +48,24 @@ def pointcloudN_response_poses(dataset_num, means, acc_x, acc_y):
         two_up = os.path.abspath(os.path.join(__file__, "../.."))
         full_path = os.path.join(two_up, "data", f"door{dataset_num}_cropped_m0_8.npy")
         points = np.load(full_path)
-        response = doorpost_pose_from_cropped_pointcloud_usecase(points, vis=0)
+        response = doorpost_pose_from_cropped_pointcloud_usecase(
+            points, vis=VizLVL.NONE
+        )
         print(
-            f">>> trial {i}: success: {response['success']}, poses: {response['poses']}, certainty: {response['certainty']}"
+            f">>> trial {i}: success: {response.success}, poses: {response.poses}, certainty: {response.certainty}"
         )
         responses.append(response)
-        poses.append(response["poses"])
+        poses.append(response.poses)
 
     print(f"variance in pose estimates {np.var(poses, axis=0)}")
     print(f"mean in pose estimates {np.mean(poses, axis=0)}")
 
     for response in responses:
         # print(f"poses: {response['poses']}")
-        assert response["poses"][0] == pytest.approx(means[0], abs=acc_x)
-        assert response["poses"][1] == pytest.approx(means[1], abs=acc_y)
-        assert response["poses"][2] == pytest.approx(means[2], abs=acc_x)
-        assert response["poses"][3] == pytest.approx(means[3], abs=acc_y)
+        assert response.poses[0] == pytest.approx(means[0], abs=acc_x)
+        assert response.poses[1] == pytest.approx(means[1], abs=acc_y)
+        assert response.poses[2] == pytest.approx(means[2], abs=acc_x)
+        assert response.poses[3] == pytest.approx(means[3], abs=acc_y)
 
 
 def test_pointcloud1_response_poses():
@@ -77,10 +80,10 @@ def test_pointcloud2_response_poses():
     )
 
 
-def test_pointcloud3_response_poses():
-    pointcloudN_response_poses(
-        3, [1.63835107, -0.76956589, 1.79067968, 0.15064277], 0.2, 0.2
-    )
+# def test_pointcloud3_response_poses():
+#     pointcloudN_response_poses(
+#         3, [1.63835107, -0.76956589, 1.79067968, 0.15064277], 0.2, 0.2
+#     )
 
 
 def test_pointcloud4_response_poses():
@@ -107,11 +110,9 @@ def test_pointcloud1_response_success():
     two_up = os.path.abspath(os.path.join(__file__, "../.."))
     full_path = os.path.join(two_up, "data", "door1_cropped_m0_8.npy")
     points = np.load(full_path)
-    response = doorpost_pose_from_cropped_pointcloud_usecase(points, vis=0)
-    assert response["success"] == True
+    response = doorpost_pose_from_cropped_pointcloud_usecase(points, vis=VizLVL.NONE)
+    assert response["success"] is True
 
-
-# def
 
 if __name__ == "__main__":
     test_pointcloud4_response_poses()

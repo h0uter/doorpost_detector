@@ -6,7 +6,6 @@ import matplotlib.pyplot as plt
 import open3d as o3d
 import logging
 
-from doorpost_detector.utils.o3d_arrow import *
 from doorpost_detector.utils.converters import npy2pcd
 
 
@@ -138,9 +137,6 @@ class PointcloudProcessor:
                 post_vectors.append(A)
 
         logging.debug(f"possible_posts: {possible_posts}")
-
-        # if self.debug_statements:
-        # print(f"possible_posts: {possible_posts}")
 
         clustered_pointcloud = pcd_small
         return possible_posts, clustered_pointcloud, post_vectors

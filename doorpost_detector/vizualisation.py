@@ -3,9 +3,6 @@ import open3d as o3d
 import matplotlib.pyplot as plt
 import numpy as np
 
-# from open3d.cpu.pybind.geometry import Pointcloud
-
-# from ..utils.utils import npy2pcd
 
 ### VISUALIZATION ###
 def set_axes_equal(ax: plt.Axes):
