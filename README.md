@@ -1,4 +1,4 @@
-# doorpost_detector
+# Doorpost Detector
 This package contains a pointcloud processing pipeline to estimate the poses of doorposts.
 
 
@@ -31,6 +31,6 @@ response = dpd.doorpost_pose_from_pointcloud_and_door_location_estimate_usecase(
 @dataclass
 class Response:
     success: bool
-    poses: tuple[float, float, float, float]
+    poses: tuple[float, float, float, float] # x1,y1,x2,y2
     certainty: tuple[float, float]
 ```
