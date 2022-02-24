@@ -1,9 +1,11 @@
+# ENTITY
 import numpy as np
+import numpy.typing as npt
 import pyransac3d as pyrsc
 import matplotlib.pyplot as plt
 
 from doorpost_detector.utils.o3d_arrow import *
-from doorpost_detector.utils.utils import npy2pcd
+from doorpost_detector.utils.converters import npy2pcd
 import open3d as o3d
 
 import logging
@@ -26,12 +28,27 @@ class PointcloudProcessor:
         self.door_post_line_thresh = 0.01
         self.door_post_line_max_iteration = 1000
 
+    def crop_pointcloud(
+        self, pc_array: npt.NDArray, crop_target: tuple, crop_margin: tuple
+    ):
+
+        cropped_pc = [
+            point
+            for point in pc_array
+            if crop_target[0] - crop_margin <= point[0] <= crop_target[0] + crop_margin
+            and crop_target[1] - crop_margin <= point[1] <= crop_target[1] + crop_margin
+        ]
+
+        return cropped_pc
+
     def remove_outliers_around_door_first_pass(
         self, pointcloud: o3d.geometry.PointCloud
     ) -> tuple:
         logging.debug(f"removing outliers_around_door_first_pass")
         cl, index = pointcloud.remove_statistical_outlier(
-            nb_neighbors=self.nb_neigbours, std_ratio=self.std_ratio, print_progress=False
+            nb_neighbors=self.nb_neigbours,
+            std_ratio=self.std_ratio,
+            print_progress=False,
         )
         # cl, index = pointcloud.remove_radius_outlier(nb_points=40, radius = 0.075)
         # cl, index = pointcloud.remove_statistical_outlier(nb_neighbors=200, std_ratio=0.01)
@@ -79,7 +96,7 @@ class PointcloudProcessor:
         )
 
         max_label = labels.max()
-        
+
         logging.debug(f"pointcloud has {max_label + 1} clusters")
         # if self.debug_statements:
         #     print("pointcloud has %d clusters" % (max_label + 1))
@@ -123,7 +140,7 @@ class PointcloudProcessor:
         logging.debug(f"possible_posts: {possible_posts}")
 
         # if self.debug_statements:
-            # print(f"possible_posts: {possible_posts}")
+        # print(f"possible_posts: {possible_posts}")
 
         clustered_pointcloud = pcd_small
         return possible_posts, clustered_pointcloud, post_vectors

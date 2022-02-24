@@ -1,10 +1,10 @@
-from doorpost_detector.usecases.detect_doorposts_usecase import (
+from doorpost_detector.detect_doorposts_usecase import (
     detect_doorposts_usecase,
 )
 import numpy as np
 import os
 
-from doorpost_detector.utils.utils import npy2pcd
+from doorpost_detector.utils.converters import npy2pcd
 
 
 def test_run():

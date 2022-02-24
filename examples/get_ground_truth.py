@@ -2,7 +2,7 @@ import numpy as np
 import os
 import open3d as o3d
 
-from doorpost_detector.utils.utils import npy2pcd
+from doorpost_detector.utils.converters import npy2pcd
 
 
 def pick_points(points: list, dataset_idx):
@@ -25,7 +25,7 @@ def pick_points(points: list, dataset_idx):
 def get_ground_truth():
     # points = np.load('data/robot_cropped_pointcloud.npy')
     # path = os.path.abspath(".")
-    # path = os.path.join("") 
+    # path = os.path.join("")
 
     ground_truth = {}
 
@@ -65,4 +65,3 @@ if __name__ == "__main__":
     # test_pc1_success()
     # test_run()
     get_ground_truth()
-

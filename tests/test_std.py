@@ -2,7 +2,7 @@ import numpy as np
 import os
 import pytest
 
-from doorpost_detector.usecases.detect_doorposts_usecase import (
+from doorpost_detector.detect_doorposts_usecase import (
     detect_doorposts_usecase,
 )
 

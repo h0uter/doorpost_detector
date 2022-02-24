@@ -1,13 +1,15 @@
 import numpy as np
+
 # from numpy.core.numeric import Inf
 import open3d as o3d
 import copy
 
 
-from doorpost_detector.entry_points.visualize_pipeline import *
-from doorpost_detector.entities.pointcloud_processor import PointcloudProcessor
-from doorpost_detector.utils.utils import npy2pcd
+from doorpost_detector.visualize_pipeline import *
+from doorpost_detector.pointcloud_processor import PointcloudProcessor
+from doorpost_detector.utils.converters import npy2pcd
 from doorpost_detector.utils.o3d_arrow import *
+
 
 class Response:
     def __init__(self, success, poses):
@@ -18,6 +20,7 @@ class Response:
 # cropped_pointcloud_to_door_post_poses_usecase
 # def detect_doorposts_usecase(points: list, vis=0) -> Response:
 
+
 def detect_doorposts_usecase(points: list, vis=0):
     debug_statements = False
     success = False
@@ -25,7 +28,7 @@ def detect_doorposts_usecase(points: list, vis=0):
     N = 0
     max_attempts = 10
     processor = PointcloudProcessor()
-    
+
     # FIXME this condition is not triggered sometimes
     while not success and N < max_attempts:
 
@@ -122,7 +125,7 @@ def detect_doorposts_usecase(points: list, vis=0):
             """Order door posts so the left one (lowest x coord) always comes first."""
             if poses[1] > poses[3]:
                 poses = [poses[2], poses[3], poses[0], poses[1]]
-        
+
         else:
             N += 1
             success = False

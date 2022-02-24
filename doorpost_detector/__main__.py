@@ -1,4 +1,4 @@
-from doorpost_detector.usecases.detect_doorposts_usecase import detect_doorposts_usecase
+from doorpost_detector.detect_doorposts_usecase import detect_doorposts_usecase
 
 
 def main():
