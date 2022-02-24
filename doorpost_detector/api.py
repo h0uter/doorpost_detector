@@ -4,8 +4,7 @@ from dataclasses import dataclass
 # import numpy as np
 import open3d as o3d
 
-from doorpost_detector import PointcloudProcessor
-from doorpost_detector import vizualisation
+from doorpost_detector import PointcloudProcessor, vizualisation
 from doorpost_detector.utils.converters import npy2pcd
 from doorpost_detector.utils.viz_lvl import VizLVL
 
@@ -25,7 +24,7 @@ def doorpost_pose_from_cropped_pointcloud_usecase(
     success = False
     certainty = 0.0
     N = 0
-    max_attempts = 50
+    max_attempts = 5
     poses = []
     processor = PointcloudProcessor()
     post_vectors = None

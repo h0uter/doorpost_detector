@@ -24,7 +24,7 @@ def pick_points(points: list, dataset_idx):
 
 def get_ground_truth():
     ground_truth = {}
-    
+
     for i in range(0, 7):
         points = None
         if i == 0:

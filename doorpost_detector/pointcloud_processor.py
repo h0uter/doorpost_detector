@@ -189,7 +189,7 @@ class PointcloudProcessor:
                         best_fit_door_post_b = postb
         
         logging.debug(f"lowest error compared to std doorwidth of 0.8meter: {best_fit_door_width_error}, with posts {best_fit_door_post_a} and {best_fit_door_post_b}")
-        assert best_fit_door_post_a is not None
-        assert best_fit_door_post_b is not None
+        # assert best_fit_door_post_a is not None
+        # assert best_fit_door_post_b is not None
 
         return best_fit_door_post_a, best_fit_door_post_b
