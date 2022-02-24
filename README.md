@@ -5,9 +5,14 @@ This package contains a pointcloud processing pipeline to estimate the poses of 
 
 
 ## Quick start
-`pip install -r requirements.txt`
+`pip install doorpost_detector`
 
-`pip install -e .`
+OR
+
+- `git clone <repo-link>`
+- `cd <repo-dir>`
+- `pip install -r requirements.txt`
+- `pip install -e .`
 
 
 ## To obtain doorpost poses from cropped pointcloud
