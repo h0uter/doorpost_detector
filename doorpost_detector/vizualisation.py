@@ -3,6 +3,12 @@ import open3d as o3d
 import matplotlib.pyplot as plt
 import numpy as np
 
+from doorpost_detector.utils.o3d_arrow import (
+    draw_geometries,
+    get_o3d_FOR,
+    get_arrow,
+)
+
 
 ### VISUALIZATION ###
 def set_axes_equal(ax: plt.Axes):
@@ -25,7 +31,7 @@ def set_axes_equal(ax: plt.Axes):
     _set_axes_radius(ax, origin, radius)
 
 
-def plot_points(points: list, best_inliers: list, outliers: list) -> None:
+def plot_points(points, best_inliers: list[int], outliers: list) -> None:
     # TODO: update to not take the points argument
     fig = plt.figure()
     ax = fig.add_subplot(111, projection="3d")
@@ -61,3 +67,21 @@ def display_inlier_outlier(cloud: o3d.geometry.PointCloud, ind: list) -> None:
     inlier_cloud.paint_uniform_color([0.8, 0.8, 0.8])
     # TODO: make this respect the vis setting
     o3d.visualization.draw_geometries([inlier_cloud, outlier_cloud])
+
+
+def display_end_result(
+    best_fit_doorpost_a, best_fit_doorpost_b, post_vectors, pointcloud_orig
+):
+    # cleanup this plotting mess
+    FOR = get_o3d_FOR()
+    # prevent nonetype from fucking up
+    if best_fit_doorpost_a:
+        xa, ya = best_fit_doorpost_a
+        arrow_a = get_arrow([xa, ya, 0.01], vec=post_vectors[0])
+
+        if best_fit_doorpost_b:
+            xb, yb = best_fit_doorpost_b
+            arrow_b = get_arrow([xb, yb, 0.01], vec=post_vectors[1])
+            draw_geometries([FOR, pointcloud_orig, arrow_a, arrow_b])
+        else:
+            draw_geometries([FOR, pointcloud_orig, arrow_a])

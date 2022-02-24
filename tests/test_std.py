@@ -3,7 +3,6 @@ import os
 import pytest
 
 from doorpost_detector.utils.viz_lvl import VizLVL
-
 from doorpost_detector.api import doorpost_pose_from_cropped_pointcloud_usecase
 
 
@@ -23,17 +22,17 @@ def test_pointcloud0_response_poses():
             points, vis=VizLVL.NONE
         )
         print(
-            f">>> trial {i}: success: {response['success']}, poses: {response['poses']}"
+            f">>> trial {i}: success: {response.success}, poses: {response.poses}"
         )
         responses.append(response)
-        poses.append(response["poses"])
+        poses.append(response.poses)
 
     print(f"variance in pose estimates {np.var(poses, axis=0)}")
     print(f"mean in pose estimates {np.mean(poses, axis=0)}")
 
     for response in responses:
-        print(f"poses: {response['poses']}")
-        assert response["poses"] == pytest.approx(
+        print(f"poses: {response.poses}")
+        assert response.poses == pytest.approx(
             [0.9718209, -0.3933652, 0.93043636, 0.58672456], abs=acc_x
         )
 
@@ -111,7 +110,7 @@ def test_pointcloud1_response_success():
     full_path = os.path.join(two_up, "data", "door1_cropped_m0_8.npy")
     points = np.load(full_path)
     response = doorpost_pose_from_cropped_pointcloud_usecase(points, vis=VizLVL.NONE)
-    assert response["success"] is True
+    assert response.success is True
 
 
 if __name__ == "__main__":

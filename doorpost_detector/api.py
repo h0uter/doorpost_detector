@@ -7,25 +7,18 @@ from doorpost_detector import PointcloudProcessor
 from doorpost_detector import vizualisation
 from doorpost_detector.utils.converters import npy2pcd
 from doorpost_detector.utils.viz_lvl import VizLVL
-from doorpost_detector.utils.o3d_arrow import (
-    draw_geometries,
-    get_o3d_FOR,
-    get_arrow,
-)
+
 
 # TODO: make this a dataclass
 class Response:
-    def __init__(self, success, poses, certainty):
+    def __init__(
+        self, success: bool, poses: list[float], certainty: tuple[float, float]
+    ):
         self.success = success
         self.poses = poses
         self.certainty = certainty
 
-
-# cropped_pointcloud_to_door_post_poses_usecase
-# def detect_doorposts_usecase(points: list, vis=0) -> Response:
-
 # TODO: split into multiple functions
-# TODO: create tidy response class
 def doorpost_pose_from_cropped_pointcloud_usecase(
     points: list, vis: VizLVL = VizLVL.NONE
 ) -> Response:
@@ -36,12 +29,10 @@ def doorpost_pose_from_cropped_pointcloud_usecase(
     max_attempts = 50
     processor = PointcloudProcessor()
 
-    # FIXME this condition is not triggered sometimes
     while not success and N < max_attempts:
-
         points_copy = copy.deepcopy(points)
         poses = []
-        # points = copy.deepcopy(points_copy)
+        # FIXME: pointcloud coppying mess
         pointcloud_yolo = npy2pcd(points_copy)
         pointcloud_orig = copy.deepcopy(pointcloud_yolo)
         pointcloud = copy.deepcopy(pointcloud_yolo)
@@ -77,43 +68,20 @@ def doorpost_pose_from_cropped_pointcloud_usecase(
         """obtain the doorpost locations using clustering and indexing by color"""
         (
             possible_posts,
-            clustered_pointcloud,
+            clustered_pc,
             post_vectors,
         ) = processor.obtain_door_post_poses_using_clustering(pointcloud)
         if vis >= VizLVL.EVERY_STEP:
-            o3d.visualization.draw_geometries([clustered_pointcloud])
+            o3d.visualization.draw_geometries([clustered_pc])
 
+        # if we didnt find any post retry
         if possible_posts == False:
             N += 1
             success = False
+            print(f">>> no possible doorposts found, retrying {N}")
             continue
 
-        # print(f"postvectors {post_vectors}")
-
-        best_fit_door_post_a, best_fit_door_post_b = None, None
-        best_fit_door_width_error = float("Inf")
-        for posta in possible_posts:
-            for postb in possible_posts:
-
-                door_width = np.linalg.norm(np.array(posta) - np.array(postb))
-                if debug_statements:
-                    print(
-                        f"for post {posta} and {postb} the door width is: {door_width}"
-                    )
-
-                # HACK: this is not a good way to get this width
-                # get the doorposts for which the door width is as close to the standard size of a door (0.8) as possible
-                door_width_error = np.abs(door_width - 0.8)
-                if door_width_error < best_fit_door_width_error:
-                    best_fit_door_width_error = door_width_error
-                    best_fit_door_post_a = posta
-                    if postb != posta:
-                        best_fit_door_post_b = postb
-
-        if debug_statements:
-            print(
-                f"lowest error compared to std doorwidth of 0.8meter: {best_fit_door_width_error}, with posts {best_fit_door_post_a} and {best_fit_door_post_b}"
-            )
+        best_fit_door_post_a, best_fit_door_post_b = processor.find_best_fit_doorposts(possible_posts)
 
         # check whether we dont have duplicate posts
         if (
@@ -142,63 +110,21 @@ def doorpost_pose_from_cropped_pointcloud_usecase(
         if debug_statements:
             print(f">>> success of pipeline: {success}, poses: {poses}")
 
-        # prevent nonetype from fucking up
+        if vis >= VizLVL.RESULT_ONLY:
+            vizualisation.display_end_result(best_fit_door_post_a, best_fit_door_post_b, post_vectors, pointcloud_orig)
 
-        # cleanup this plotting mess
-        FOR = get_o3d_FOR()
-        if best_fit_door_post_a:
-            xa, ya = best_fit_door_post_a
-            arrow_a = get_arrow([xa, ya, 0.01], vec=post_vectors[0])
-
-            if best_fit_door_post_b:
-                xb, yb = best_fit_door_post_b
-                arrow_b = get_arrow([xb, yb, 0.01], vec=post_vectors[1])
-                if vis >= VizLVL.RESULT_ONLY:
-                    draw_geometries([FOR, pointcloud_orig, arrow_a, arrow_b])
-            else:
-                if vis >= VizLVL.RESULT_ONLY:
-                    draw_geometries([FOR, pointcloud_orig, arrow_a])
-
-        def unit_vector(vector):
-            """ Returns the unit vector of the vector.  """
-            return vector / np.linalg.norm(vector)
-
-        def angle_between(v1, v2):
-            """ Returns the angle in radians between vectors 'v1' and 'v2'::
-
-                >>> angle_between((1, 0, 0), (0, 1, 0))
-                1.5707963267948966
-                >>> angle_between((1, 0, 0), (1, 0, 0))
-                0.0
-                >>> angle_between((1, 0, 0), (-1, 0, 0))
-                3.141592653589793
-            """
-            v1_u = unit_vector(v1)
-            v2_u = unit_vector(v2)
-            return np.arccos(np.clip(np.dot(v1_u, v2_u), -1.0, 1.0))
-
-        # certainty = np.pi - angle_between([1,0,0], post_vectors[0])/ (np.pi), np.pi - angle_between([1,0,0], post_vectors[1])/(np.pi)
-        angle_1 = angle_between([0, 0, -1], post_vectors[0])
-        angle_2 = angle_between([0, 0, -1], post_vectors[1])
-        print(f"angle 1: {angle_1}, angle 2: {angle_2}")
-        if 0.5 * np.pi < angle_1 < np.pi:
-            angle_1 = abs(angle_1 - np.pi)
-        if 0.5 * np.pi < angle_2 < np.pi:
-            angle_1 = abs(angle_1 - np.pi)
-
-        certainty = angle_1 / (np.pi), angle_2 / (np.pi)
-
-    response = Response(success, poses, certainty)
-
-    # return {"poses": poses, "success": success, "certainty": certainty}
-    return response
+    certainty = processor.determine_certainty_from_angle(post_vectors)
+    return Response(success, poses, certainty)
 
 
-def doorpost_pose_from_pointcloud_and_door_location_estimate(np_points, door_location):
+def doorpost_pose_from_pointcloud_and_door_location_estimate_usecase(
+    np_points, door_location
+) -> Response:
     """
     Given a pointcloud and a door location, find the doorpost pose.
     """
-    # crop pointcloud
-    # run above pipeline
-    pass
+    processor = PointcloudProcessor()
+    cropped_points = processor.crop_pointcloud(np_points, door_location)
 
+    response = doorpost_pose_from_cropped_pointcloud_usecase(cropped_points)
+    return response
