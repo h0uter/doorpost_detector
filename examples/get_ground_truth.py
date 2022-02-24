@@ -1,5 +1,5 @@
 import numpy as np
-# import os
+import os
 import open3d as o3d
 
 from doorpost_detector.utils.converters import npy2pcd
@@ -23,26 +23,24 @@ def pick_points(points: list, dataset_idx):
 
 
 def get_ground_truth():
-    # points = np.load('data/robot_cropped_pointcloud.npy')
-    # path = os.path.abspath(".")
-    # path = os.path.join("")
-
     ground_truth = {}
-
+    
     for i in range(0, 7):
         points = None
         if i == 0:
-            # points = np.load(f"{path}/data/door0_cropped.npy")
-            points = np.load(f"data/door0_cropped.npy")
+            path = os.path.join("data", "door0_cropped.npy")
+            points = np.load(path)
         else:
             # crop margin 0.8m works decent
-            # points = np.load(f"{path}/data/door{i}_cropped_m0_8.npy")
-            points = np.load(f"data/door{i}_cropped_m0_8.npy")
+            path = os.path.join("data", f"door{i}_cropped_m0_8.npy")
+
             # crop margin 1.5m has lots of problems
-            # points = np.load(f'data/door{i}_cropped_m1_5.npy')
+            # path = os.path.join("data", f"door{i}_cropped_m1_5.npy")
+
+            points = np.load(path)
 
         picked_points = pick_points(points, i)
-        # response = cropped_pointcloud_to_door_post_poses_usecase(points, vis=0)
+
         print(f">>> dataset {i}: picked points = {points[picked_points]}")
         ground_truth[i] = points[picked_points]
 

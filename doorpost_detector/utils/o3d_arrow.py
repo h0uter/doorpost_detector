@@ -73,7 +73,7 @@ def create_arrow(scale=1):
     return mesh_frame
 
 
-def get_arrow(origin=[0, 0, 0], end=None, vec=None):
+def get_arrow(origin=[0.0, 0.0, 0.0], end=None, vec=None):
     """
     Creates an arrow from an origin point to an end point,
     or create an arrow from a vector vec starting from origin.
@@ -86,7 +86,8 @@ def get_arrow(origin=[0, 0, 0], end=None, vec=None):
     T = np.array([[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]])
     T[:3, -1] = origin
     if end is not None:
-        vec = np.array(end) - np.array(origin)
+        # vec = np.array(end) - np.array(origin)
+        vec = np.subtract(np.array(end), np.array(origin))
     elif vec is not None:
         vec = np.array(vec)
     if end is not None or vec is not None:

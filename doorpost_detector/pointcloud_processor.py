@@ -72,7 +72,7 @@ class PointcloudProcessor:
     ) -> o3d.geometry.PointCloud:
         logging.debug(f"removing the ground plane using spots height")
 
-        dpoints = points[best_inliers]
+        dpoints = points[best_inliers]  # type: ignore
 
         # change to expected hight of spot
         not_plane = dpoints[:, 2] > np.min(dpoints[:, 2]) + 0.1
@@ -103,8 +103,8 @@ class PointcloudProcessor:
 
         cmap = plt.get_cmap("tab20")
         colors = cmap(labels / (max_label if max_label > 0 else 1))
-        colors[labels < 0] = 0
-        pcd_small.colors = o3d.utility.Vector3dVector(colors[:, :3])
+        colors[labels < 0] = 0  # type: ignore
+        pcd_small.colors = o3d.utility.Vector3dVector(colors[:, :3])  # type: ignore
         color_array = np.asarray(pcd_small.colors)
         color_list = (
             color_array[:, 0] + 10 * color_array[:, 1] + 100 * color_array[:, 1]
@@ -158,7 +158,6 @@ class PointcloudProcessor:
             v2_u = unit_vector(v2)
             return np.arccos(np.clip(np.dot(v1_u, v2_u), -1.0, 1.0))
 
-        # certainty = np.pi - angle_between([1,0,0], post_vectors[0])/ (np.pi), np.pi - angle_between([1,0,0], post_vectors[1])/(np.pi)
         angle_1 = angle_between([0, 0, -1], post_vectors[0])
         angle_2 = angle_between([0, 0, -1], post_vectors[1])
         print(f"angle 1: {angle_1}, angle 2: {angle_2}")
