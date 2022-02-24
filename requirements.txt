@@ -1,5 +1,4 @@
-open3d
-sympy
-matplotlib
-pyransac3d
-pytest
+open3d==0.15.1
+matplotlib==3.5.1
+pyransac3d==0.6.0
+pytest==7.0.1

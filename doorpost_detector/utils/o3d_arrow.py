@@ -2,16 +2,6 @@ import open3d as o3d
 import numpy as np
 
 
-def draw_geometries(pcds):
-    """
-    Draw Geometries
-    Args:
-        - pcds (): [pcd1,pcd2,...]
-    """
-    o3d.visualization.draw_geometries(pcds)
-    # o3d.visualization.draw_geometries_with_editing(pcds)
-
-
 def get_o3d_FOR(origin=[0, 0, 0], size=1):
     """ 
     Create a FOR that can be added to the open3d point cloud
@@ -83,7 +73,7 @@ def create_arrow(scale=1):
     return mesh_frame
 
 
-def get_arrow(origin=[0, 0, 0], end=None, vec=None):
+def get_arrow(origin=[0.0, 0.0, 0.0], end=None, vec=None):
     """
     Creates an arrow from an origin point to an end point,
     or create an arrow from a vector vec starting from origin.
@@ -96,7 +86,8 @@ def get_arrow(origin=[0, 0, 0], end=None, vec=None):
     T = np.array([[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]])
     T[:3, -1] = origin
     if end is not None:
-        vec = np.array(end) - np.array(origin)
+        # vec = np.array(end) - np.array(origin)
+        vec = np.subtract(np.array(end), np.array(origin))
     elif vec is not None:
         vec = np.array(vec)
     if end is not None or vec is not None:
@@ -123,4 +114,4 @@ if __name__ == "__main__":
     # arrow = get_arrow()
 
     # Draw everything
-    draw_geometries([FOR, arrow])
+    o3d.visualization.draw_geometries([FOR, arrow])  # type: ignore
