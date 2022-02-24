@@ -4,7 +4,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from doorpost_detector.utils.o3d_arrow import (
-    draw_geometries,
     get_o3d_FOR,
     get_arrow,
 )
@@ -27,7 +26,8 @@ def set_axes_equal(ax: plt.Axes):
 
     limits = np.array([ax.get_xlim3d(), ax.get_ylim3d(), ax.get_zlim3d(),])
     origin = np.mean(limits, axis=1)
-    radius = 0.5 * np.max(np.abs(limits[:, 1] - limits[:, 0]))
+    # radius = 0.5 * np.max(np.abs(limits[:, 1] - limits[:, 0]))
+    radius = 0.5 * np.max(np.abs(np.subtract(limits[:, 1], limits[:, 0])))
     _set_axes_radius(ax, origin, radius)
 
 
@@ -58,7 +58,7 @@ def plot_points(points, best_inliers: list[int], outliers: list) -> None:
 
 
 def display_inlier_outlier(pcd: o3d.geometry.PointCloud, inlier_idxs: list) -> None:
-    """displays the result of the o3d outlier removal"""
+    """Displays the result of the o3d outlier removal."""
     inlier_pcd = pcd.select_by_index(inlier_idxs)
     outlier_pcd = pcd.select_by_index(inlier_idxs, invert=True)
 
@@ -66,7 +66,7 @@ def display_inlier_outlier(pcd: o3d.geometry.PointCloud, inlier_idxs: list) -> N
     outlier_pcd.paint_uniform_color([1, 0, 0])
     inlier_pcd.paint_uniform_color([0.8, 0.8, 0.8])
     # TODO: make this respect the vis setting
-    o3d.visualization.draw_geometries([inlier_pcd, outlier_pcd])
+    o3d.visualization.draw_geometries([inlier_pcd, outlier_pcd], window_name="Applied o3d outlier removal.")  # type: ignore
 
 
 def display_end_result(
@@ -82,6 +82,6 @@ def display_end_result(
         if best_fit_doorpost_b:
             xb, yb = best_fit_doorpost_b
             arrow_b = get_arrow([xb, yb, 0.01], vec=post_vectors[1])
-            draw_geometries([FOR, pcd_orig, arrow_a, arrow_b])
+            o3d.visualization.draw_geometries([FOR, pcd_orig, arrow_a, arrow_b], window_name="End result of doorpost detection pipeline.")  # type: ignore
         else:
-            draw_geometries([FOR, pcd_orig, arrow_a])
+            o3d.visualization.draw_geometries([FOR, pcd_orig, arrow_a], window_name="End result of doorpost detection pipeline.")  # type: ignore

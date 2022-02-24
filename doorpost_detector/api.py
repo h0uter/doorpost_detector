@@ -37,40 +37,40 @@ def doorpost_pose_from_cropped_pointcloud_usecase(
         pcd_orig = copy.deepcopy(pcd_yolo)
         pcd = copy.deepcopy(pcd_yolo)
         if vis >= VizLVL.EVERY_STEP:
-            o3d.visualization.draw_geometries([pcd])  # type: ignore
+            o3d.visualization.draw_geometries([pcd], window_name="initial cropped pc")  # type: ignore
 
-        """remove statistical outliers"""
+        """Temove statistical outliers."""
         (points_copy, pcd, index,) = processor.remove_outliers_around_door_first_pass(
             pcd
         )
         if vis >= VizLVL.EVERY_STEP:
             vizualisation.display_inlier_outlier(pcd, index)
 
-        """try to fit a plane to the pointcloud, corresponding to the U shaped door post plane"""
+        """Try to fit a plane to the pointcloud, corresponding to the U shaped door post plane."""
         best_inliers, outliers = processor.fit_plane_to_U_shaped_door_frame(points_copy)
         if vis >= VizLVL.EVERY_STEP:
             vizualisation.plot_points(points_copy, best_inliers, outliers)
 
-        """remove line corresponding to ground in the U shaped door frame"""
+        """Remove line corresponding to ground in the U shaped door frame."""
         pcd = processor.remove_ground_plane_line(points_copy, best_inliers)
         if vis >= VizLVL.EVERY_STEP:
-            o3d.visualization.draw_geometries([pcd])  # type: ignore
+            o3d.visualization.draw_geometries([pcd], window_name="Removed line corresponding to ground in the U shaped door frame.")  # type: ignore
 
-        """subsample points to make clustering tractable"""
+        """Subsample points to make clustering tractable."""
         pcd_small = pcd.voxel_down_sample(
             voxel_size=0.05
         )  # apparently this is to help clustering metho
         if vis >= VizLVL.EVERY_STEP:
-            o3d.visualization.draw_geometries([pcd_small])  # type: ignore
+            o3d.visualization.draw_geometries([pcd_small], window_name="Subsampled points to make clustering tractable.")  # type: ignore
 
-        """obtain the doorpost locations using clustering and indexing by color"""
+        """Obtain the doorpost locations using clustering and indexing by color."""
         (
             possible_posts,
             clustered_pc,
             post_vectors,
         ) = processor.obtain_door_post_poses_using_clustering(pcd)
         if vis >= VizLVL.EVERY_STEP:
-            o3d.visualization.draw_geometries([clustered_pc])  # type: ignore
+            o3d.visualization.draw_geometries([clustered_pc], window_name="Obtain the doorpost locations using clustering and indexing by color.")  # type: ignore
 
         # if we didnt find any post retry
         if possible_posts == False:

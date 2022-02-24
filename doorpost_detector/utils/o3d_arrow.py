@@ -2,16 +2,6 @@ import open3d as o3d
 import numpy as np
 
 
-def draw_geometries(pcds):
-    """
-    Draw Geometries
-    Args:
-        - pcds (): [pcd1,pcd2,...]
-    """
-    o3d.visualization.draw_geometries(pcds)
-    # o3d.visualization.draw_geometries_with_editing(pcds)
-
-
 def get_o3d_FOR(origin=[0, 0, 0], size=1):
     """ 
     Create a FOR that can be added to the open3d point cloud
@@ -123,4 +113,4 @@ if __name__ == "__main__":
     # arrow = get_arrow()
 
     # Draw everything
-    draw_geometries([FOR, arrow])
+    o3d.visualization.draw_geometries([FOR, arrow])  # type: ignore
