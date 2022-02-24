@@ -17,14 +17,15 @@ class PointcloudProcessor:
     def __init__(self) -> None:
 
         # all hyper parameters for the pipeline
-        self.nb_neigbours = 100
-        self.std_ratio = 0.1
-        self.line1_thresh = 0.1
-        self.max_iteration = 1000
-        self.dbscan_eps = 0.2
-        self.dbscan_min_points = 10
-        self.door_post_line_thresh = 0.01
-        self.door_post_line_max_iteration = 1000
+        self.NB_NEIGHBOURS = 100
+        self.STD_RATIO = 0.1
+        self.LINE1_THRESH = 0.1
+        self.MAX_ITERATION = 1000
+        self.DBSCAN_EPS = 0.2
+        self.DBSCAN_MIN_POINTS = 10
+        self.DOOR_POST_LINE_THRESH = 0.01
+        self.DOOR_POST_LINE_MAX_ITERATION = 1000
+        self.DOOR_WIDTH = 0.8
 
     def crop_pointcloud(
         self, pc_array: npt.NDArray, crop_target: tuple, crop_margin: float = 0.8
@@ -44,8 +45,8 @@ class PointcloudProcessor:
     ) -> tuple:
         logging.debug(f"removing outliers_around_door_first_pass")
         cl, index = pointcloud.remove_statistical_outlier(
-            nb_neighbors=self.nb_neigbours,
-            std_ratio=self.std_ratio,
+            nb_neighbors=self.NB_NEIGHBOURS,
+            std_ratio=self.STD_RATIO,
             print_progress=False,
         )
         # cl, index = pointcloud.remove_radius_outlier(nb_points=40, radius = 0.075)
@@ -59,7 +60,7 @@ class PointcloudProcessor:
 
         plane1 = pyrsc.Plane()
         best_eq, best_inliers = plane1.fit(
-            points, thresh=self.line1_thresh, maxIteration=self.max_iteration
+            points, thresh=self.LINE1_THRESH, maxIteration=self.MAX_ITERATION
         )
 
         set_difference = set(list(range(len(points)))) - set(best_inliers)
@@ -87,8 +88,8 @@ class PointcloudProcessor:
 
         labels = np.array(
             pcd_small.cluster_dbscan(
-                eps=self.dbscan_eps,
-                min_points=self.dbscan_min_points,
+                eps=self.DBSCAN_EPS,
+                min_points=self.DBSCAN_MIN_POINTS,
                 print_progress=False,
             )
         )
@@ -122,8 +123,8 @@ class PointcloudProcessor:
             if points.shape[0] > 2:
                 A, B, best_inliers = door_post_line.fit(
                     points,
-                    thresh=self.door_post_line_thresh,
-                    maxIteration=self.door_post_line_max_iteration,
+                    thresh=self.DOOR_POST_LINE_THRESH,
+                    maxIteration=self.DOOR_POST_LINE_MAX_ITERATION,
                 )
             else:
                 return False, False, False
@@ -172,15 +173,16 @@ class PointcloudProcessor:
     def find_best_fit_doorposts(self, possible_posts) -> tuple[tuple[float,float], tuple[float,float]]:
         best_fit_door_post_a, best_fit_door_post_b = None, None
         best_fit_door_width_error = float("Inf")
-        
+
         for posta in possible_posts:
             for postb in possible_posts:
-                door_width = np.linalg.norm(np.array(posta) - np.array(postb))
+                # door_width = np.linalg.norm(np.array(posta) - np.array(postb))
+                door_width = np.linalg.norm(np.subtract(np.array(posta), np.array(postb)))
                 logging.debug(f"for post {posta} and {postb} the door width is: {door_width}")
 
                 # HACK: this is not a good way to get this width
                 # get the doorposts for which the door width is as close to the standard size of a door (0.8) as possible
-                door_width_error = np.abs(door_width - 0.8)
+                door_width_error = np.abs(door_width - self.DOOR_WIDTH)
                 if door_width_error < best_fit_door_width_error:
                     best_fit_door_width_error = door_width_error
                     best_fit_door_post_a = posta
@@ -188,5 +190,7 @@ class PointcloudProcessor:
                         best_fit_door_post_b = postb
         
         logging.debug(f"lowest error compared to std doorwidth of 0.8meter: {best_fit_door_width_error}, with posts {best_fit_door_post_a} and {best_fit_door_post_b}")
+        assert best_fit_door_post_a is not None
+        assert best_fit_door_post_b is not None
 
         return best_fit_door_post_a, best_fit_door_post_b

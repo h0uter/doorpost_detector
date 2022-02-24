@@ -30,7 +30,7 @@ def doorpost_pose_from_cropped_pointcloud_usecase(
 
     while not success and N < max_attempts:
         points_copy = copy.deepcopy(points)
-        poses = []
+        poses: list[float] = []
         # FIXME: pointcloud coppying mess
         pcd_yolo = npy2pcd(points_copy)
         pcd_orig = copy.deepcopy(pcd_yolo)
