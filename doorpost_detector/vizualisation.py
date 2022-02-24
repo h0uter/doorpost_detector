@@ -57,20 +57,20 @@ def plot_points(points, best_inliers: list[int], outliers: list) -> None:
     plt.show()
 
 
-def display_inlier_outlier(cloud: o3d.geometry.PointCloud, ind: list) -> None:
+def display_inlier_outlier(pcd: o3d.geometry.PointCloud, inlier_idxs: list) -> None:
     """displays the result of the o3d outlier removal"""
-    inlier_cloud = cloud.select_by_index(ind)
-    outlier_cloud = cloud.select_by_index(ind, invert=True)
+    inlier_pcd = pcd.select_by_index(inlier_idxs)
+    outlier_pcd = pcd.select_by_index(inlier_idxs, invert=True)
 
     print("Showing outliers (red) and inliers (gray): ")
-    outlier_cloud.paint_uniform_color([1, 0, 0])
-    inlier_cloud.paint_uniform_color([0.8, 0.8, 0.8])
+    outlier_pcd.paint_uniform_color([1, 0, 0])
+    inlier_pcd.paint_uniform_color([0.8, 0.8, 0.8])
     # TODO: make this respect the vis setting
-    o3d.visualization.draw_geometries([inlier_cloud, outlier_cloud])
+    o3d.visualization.draw_geometries([inlier_pcd, outlier_pcd])
 
 
 def display_end_result(
-    best_fit_doorpost_a, best_fit_doorpost_b, post_vectors, pointcloud_orig
+    best_fit_doorpost_a, best_fit_doorpost_b, post_vectors, pcd_orig
 ):
     # cleanup this plotting mess
     FOR = get_o3d_FOR()
@@ -82,6 +82,6 @@ def display_end_result(
         if best_fit_doorpost_b:
             xb, yb = best_fit_doorpost_b
             arrow_b = get_arrow([xb, yb, 0.01], vec=post_vectors[1])
-            draw_geometries([FOR, pointcloud_orig, arrow_a, arrow_b])
+            draw_geometries([FOR, pcd_orig, arrow_a, arrow_b])
         else:
-            draw_geometries([FOR, pointcloud_orig, arrow_a])
+            draw_geometries([FOR, pcd_orig, arrow_a])

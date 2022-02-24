@@ -26,17 +26,18 @@ def doorpost_pose_from_cropped_pointcloud_usecase(
     certainty = 0.0
     N = 0
     max_attempts = 50
+    poses = []
     processor = PointcloudProcessor()
+    post_vectors = None
 
     while not success and N < max_attempts:
-        points_copy = copy.deepcopy(points)
-        poses: list[float] = []
         # FIXME: pointcloud coppying mess
+        points_copy = copy.deepcopy(points)
         pcd_yolo = npy2pcd(points_copy)
         pcd_orig = copy.deepcopy(pcd_yolo)
         pcd = copy.deepcopy(pcd_yolo)
         if vis >= VizLVL.EVERY_STEP:
-            o3d.visualization.draw_geometries([pcd])
+            o3d.visualization.draw_geometries([pcd])  # type: ignore
 
         """remove statistical outliers"""
         (points_copy, pcd, index,) = processor.remove_outliers_around_door_first_pass(
@@ -53,14 +54,14 @@ def doorpost_pose_from_cropped_pointcloud_usecase(
         """remove line corresponding to ground in the U shaped door frame"""
         pcd = processor.remove_ground_plane_line(points_copy, best_inliers)
         if vis >= VizLVL.EVERY_STEP:
-            o3d.visualization.draw_geometries([pcd])
+            o3d.visualization.draw_geometries([pcd])  # type: ignore
 
         """subsample points to make clustering tractable"""
         pcd_small = pcd.voxel_down_sample(
             voxel_size=0.05
         )  # apparently this is to help clustering metho
         if vis >= VizLVL.EVERY_STEP:
-            o3d.visualization.draw_geometries([pcd_small])
+            o3d.visualization.draw_geometries([pcd_small])  # type: ignore
 
         """obtain the doorpost locations using clustering and indexing by color"""
         (
@@ -69,7 +70,7 @@ def doorpost_pose_from_cropped_pointcloud_usecase(
             post_vectors,
         ) = processor.obtain_door_post_poses_using_clustering(pcd)
         if vis >= VizLVL.EVERY_STEP:
-            o3d.visualization.draw_geometries([clustered_pc])
+            o3d.visualization.draw_geometries([clustered_pc])  # type: ignore
 
         # if we didnt find any post retry
         if possible_posts == False:
@@ -78,22 +79,22 @@ def doorpost_pose_from_cropped_pointcloud_usecase(
             print(f">>> no possible doorposts found, retrying {N}")
             continue
 
-        best_fit_door_post_a, best_fit_door_post_b = processor.find_best_fit_doorposts(
+        best_fit_doorpost_a, best_fit_doorpost_b = processor.find_best_fit_doorposts(
             possible_posts
         )
 
         # check whether we dont have duplicate posts
         if (
-            best_fit_door_post_a
-            and best_fit_door_post_b
-            and best_fit_door_post_a is not best_fit_door_post_b
+            best_fit_doorpost_a
+            and best_fit_doorpost_b
+            and best_fit_doorpost_a is not best_fit_doorpost_b
         ):
             success = True
             poses = [
-                best_fit_door_post_a[0],
-                best_fit_door_post_a[1],
-                best_fit_door_post_b[0],
-                best_fit_door_post_b[1],
+                best_fit_doorpost_a[0],
+                best_fit_doorpost_a[1],
+                best_fit_doorpost_b[0],
+                best_fit_doorpost_b[1],
             ]
 
             """Order door posts so the left one (lowest x coord) always comes first."""
@@ -111,7 +112,7 @@ def doorpost_pose_from_cropped_pointcloud_usecase(
 
         if vis >= VizLVL.RESULT_ONLY:
             vizualisation.display_end_result(
-                best_fit_door_post_a, best_fit_door_post_b, post_vectors, pcd_orig
+                best_fit_doorpost_a, best_fit_doorpost_b, post_vectors, pcd_orig
             )
 
     certainty = processor.determine_certainty_from_angle(post_vectors)

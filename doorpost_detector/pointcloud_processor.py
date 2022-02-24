@@ -41,19 +41,19 @@ class PointcloudProcessor:
         return cropped_pc
 
     def remove_outliers_around_door_first_pass(
-        self, pointcloud: o3d.geometry.PointCloud
+        self, pcd: o3d.geometry.PointCloud
     ) -> tuple:
         logging.debug(f"removing outliers_around_door_first_pass")
-        cl, index = pointcloud.remove_statistical_outlier(
+        cl, index = pcd.remove_statistical_outlier(
             nb_neighbors=self.NB_NEIGHBOURS,
             std_ratio=self.STD_RATIO,
             print_progress=False,
         )
         # cl, index = pointcloud.remove_radius_outlier(nb_points=40, radius = 0.075)
         # cl, index = pointcloud.remove_statistical_outlier(nb_neighbors=200, std_ratio=0.01)
-        pointcloud_inliers = pointcloud.select_by_index(index)
-        inlier_points = np.asarray(pointcloud_inliers.points)
-        return inlier_points, pointcloud, index
+        pcd_inliers = pcd.select_by_index(index)
+        inlier_points = np.asarray(pcd_inliers.points)
+        return inlier_points, pcd, index
 
     def fit_plane_to_U_shaped_door_frame(self, points: list) -> tuple:
         logging.debug(f"fit_plane_to_U_shaped_door_frame")
@@ -77,8 +77,8 @@ class PointcloudProcessor:
         # change to expected hight of spot
         not_plane = dpoints[:, 2] > np.min(dpoints[:, 2]) + 0.1
         best_points = dpoints[not_plane]
-        pointcloud = npy2pcd(best_points)
-        return pointcloud
+        pcd = npy2pcd(best_points)
+        return pcd
 
     def obtain_door_post_poses_using_clustering(
         self, pcd_small: o3d.geometry.PointCloud
