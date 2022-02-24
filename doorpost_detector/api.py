@@ -2,6 +2,7 @@ import copy
 from dataclasses import dataclass
 
 # import numpy as np
+import numpy.typing as npt
 import open3d as o3d
 
 from doorpost_detector import PointcloudProcessor, vizualisation
@@ -12,23 +13,25 @@ from doorpost_detector.utils.viz_lvl import VizLVL
 @dataclass
 class Response:
     success: bool
-    poses: list[float]
+    # TODO: make this a tuple of two tuples, or named tuples
+    poses: tuple[float, float, float, float]
     certainty: tuple[float, float]
 
 
 # TODO: split into multiple functions
 # TODO: remove vizualation
 def doorpost_pose_from_cropped_pointcloud_usecase(
-    points: list, vis: VizLVL = VizLVL.NONE
+    points: list[tuple[float, float, float]], vis: VizLVL = VizLVL.NONE
 ) -> Response:
-    debug_statements = False
     success = False
     certainty = (0.0, 0.0)
     N = 0
     max_attempts = 5
-    poses = []
+    poses = tuple()
     processor = PointcloudProcessor()
-    post_vectors = None
+    # post_vectors = None
+    # Vector = tuple[float, float, float]
+    post_vectors = list()
 
     while not success and N < max_attempts:
         # FIXME: pointcloud coppying mess
@@ -90,16 +93,16 @@ def doorpost_pose_from_cropped_pointcloud_usecase(
             and best_fit_doorpost_a is not best_fit_doorpost_b
         ):
             success = True
-            poses = [
+            poses = (
                 best_fit_doorpost_a[0],
                 best_fit_doorpost_a[1],
                 best_fit_doorpost_b[0],
                 best_fit_doorpost_b[1],
-            ]
+            )
 
             """Order door posts so the left one (lowest x coord) always comes first."""
             if poses[1] > poses[3]:
-                poses = [poses[2], poses[3], poses[0], poses[1]]
+                poses = (poses[2], poses[3], poses[0], poses[1])
 
         else:
             N += 1
@@ -117,13 +120,13 @@ def doorpost_pose_from_cropped_pointcloud_usecase(
 
 
 def doorpost_pose_from_pointcloud_and_door_location_estimate_usecase(
-    np_points, door_location
+    points: list[tuple[float, float, float]], door_location: tuple[float, float]
 ) -> Response:
     """
     Given a pointcloud and a door location, find the doorpost pose.
     """
     processor = PointcloudProcessor()
-    cropped_points = processor.crop_pointcloud(np_points, door_location)
+    cropped_points = processor.crop_pointcloud(points, door_location)
 
     response = doorpost_pose_from_cropped_pointcloud_usecase(cropped_points)
     return response

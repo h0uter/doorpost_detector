@@ -27,12 +27,12 @@ class PointcloudProcessor:
         self.DOOR_WIDTH = 0.8
 
     def crop_pointcloud(
-        self, pc_array: npt.NDArray, crop_target: tuple, crop_margin: float = 0.8
+        self, points: list[tuple[float, float, float]], crop_target: tuple, crop_margin: float = 0.8
     ):
 
         cropped_pc = [
             point
-            for point in pc_array
+            for point in points
             if crop_target[0] - crop_margin <= point[0] <= crop_target[0] + crop_margin
             and crop_target[1] - crop_margin <= point[1] <= crop_target[1] + crop_margin
         ]
@@ -79,6 +79,7 @@ class PointcloudProcessor:
         pcd = npy2pcd(best_points)
         return pcd
 
+    # TODO: add typing for return values
     def obtain_door_post_poses_using_clustering(
         self, pcd_small: o3d.geometry.PointCloud
     ) -> tuple:
@@ -168,9 +169,10 @@ class PointcloudProcessor:
         return certainty
 
     def find_best_fit_doorposts(
-        self, possible_posts
+        self, possible_posts: list
     ) -> tuple[tuple[float, float], tuple[float, float]]:
-        best_fit_door_post_a, best_fit_door_post_b = None, None
+        # best_fit_door_post_a, best_fit_door_post_b = None, None
+        best_fit_door_post_a, best_fit_door_post_b = tuple(), tuple()
         best_fit_door_width_error = float("Inf")
 
         for posta in possible_posts:
@@ -183,7 +185,6 @@ class PointcloudProcessor:
                     f"for post {posta} and {postb} the door width is: {door_width}"
                 )
 
-                # HACK: this is not a good way to get this width
                 # get the doorposts for which the door width is as close to the standard size of a door (0.8) as possible
                 door_width_error = np.abs(door_width - self.DOOR_WIDTH)
                 if door_width_error < best_fit_door_width_error:
