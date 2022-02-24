@@ -15,7 +15,6 @@ logging.basicConfig(level=logging.INFO)
 
 class PointcloudProcessor:
     def __init__(self) -> None:
-        self.debug_statements = False
 
         # all hyper parameters for the pipeline
         self.nb_neigbours = 100
@@ -97,8 +96,6 @@ class PointcloudProcessor:
         max_label = labels.max()
 
         logging.debug(f"pointcloud has {max_label + 1} clusters")
-        # if self.debug_statements:
-        #     print("pointcloud has %d clusters" % (max_label + 1))
 
         possible_posts = []
         post_vectors = []
@@ -175,14 +172,11 @@ class PointcloudProcessor:
     def find_best_fit_doorposts(self, possible_posts) -> tuple[tuple[float,float], tuple[float,float]]:
         best_fit_door_post_a, best_fit_door_post_b = None, None
         best_fit_door_width_error = float("Inf")
+        
         for posta in possible_posts:
             for postb in possible_posts:
-
                 door_width = np.linalg.norm(np.array(posta) - np.array(postb))
-                # if debug_statements:
-                #     print(
-                #         f"for post {posta} and {postb} the door width is: {door_width}"
-                #     )
+                logging.debug(f"for post {posta} and {postb} the door width is: {door_width}")
 
                 # HACK: this is not a good way to get this width
                 # get the doorposts for which the door width is as close to the standard size of a door (0.8) as possible
@@ -193,9 +187,6 @@ class PointcloudProcessor:
                     if postb != posta:
                         best_fit_door_post_b = postb
         
-        # if debug_statements:
-        #     print(
-        #         f"lowest error compared to std doorwidth of 0.8meter: {best_fit_door_width_error}, with posts {best_fit_door_post_a} and {best_fit_door_post_b}"
-        #     )
+        logging.debug(f"lowest error compared to std doorwidth of 0.8meter: {best_fit_door_width_error}, with posts {best_fit_door_post_a} and {best_fit_door_post_b}")
 
         return best_fit_door_post_a, best_fit_door_post_b
