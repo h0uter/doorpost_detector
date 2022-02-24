@@ -1,4 +1,4 @@
-from doorpost_detector.detect_doorposts_usecase import detect_doorposts_usecase
+from doorpost_detector.api import doorpost_pose_from_cropped_pointcloud_usecase
 
 
 def main():

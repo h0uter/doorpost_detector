@@ -3,12 +3,12 @@ import numpy as np
 import numpy.typing as npt
 import pyransac3d as pyrsc
 import matplotlib.pyplot as plt
+import open3d as o3d
+import logging
 
 from doorpost_detector.utils.o3d_arrow import *
 from doorpost_detector.utils.converters import npy2pcd
-import open3d as o3d
 
-import logging
 
 # logging.basicConfig(level=logging.DEBUG)
 logging.basicConfig(level=logging.INFO)

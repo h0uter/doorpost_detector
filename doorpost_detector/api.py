@@ -5,10 +5,14 @@ import open3d as o3d
 import copy
 
 
-from doorpost_detector.visualize_pipeline import *
-from doorpost_detector.pointcloud_processor import PointcloudProcessor
+from doorpost_detector import PointcloudProcessor
+from doorpost_detector import visualize_pipeline
 from doorpost_detector.utils.converters import npy2pcd
-from doorpost_detector.utils.o3d_arrow import *
+from doorpost_detector.utils.o3d_arrow import (
+    draw_geometries,
+    get_o3d_FOR,
+    get_arrow,
+)
 
 
 class Response:
@@ -21,7 +25,7 @@ class Response:
 # def detect_doorposts_usecase(points: list, vis=0) -> Response:
 
 
-def detect_doorposts_usecase(points: list, vis=0):
+def doorpost_pose_from_cropped_pointcloud_usecase(points: list, vis=0):
     debug_statements = False
     success = False
     certainty = 0.0
@@ -48,12 +52,12 @@ def detect_doorposts_usecase(points: list, vis=0):
             index,
         ) = processor.remove_outliers_around_door_first_pass(pointcloud)
         if vis >= 2:
-            display_inlier_outlier(pointcloud, index)
+            visualize_pipeline.display_inlier_outlier(pointcloud, index)
 
         """try to fit a plane to the pointcloud, corresponding to the U shaped door post plane"""
         best_inliers, outliers = processor.fit_plane_to_U_shaped_door_frame(points_copy)
         if vis >= 2:
-            plot_points(points_copy, best_inliers, outliers)
+            visualize_pipeline.plot_points(points_copy, best_inliers, outliers)
 
         """remove line corresponding to ground in the U shaped door frame"""
         pointcloud = processor.remove_ground_plane_line(points_copy, best_inliers)

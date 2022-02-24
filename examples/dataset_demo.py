@@ -1,14 +1,10 @@
-from doorpost_detector.detect_doorposts_usecase import (
-    detect_doorposts_usecase,
-)
 import numpy as np
 import os
 
-from doorpost_detector.utils.converters import npy2pcd
+import doorpost_detector.api as dpd
 
 
 def test_run():
-    # points = np.load('data/robot_cropped_pointcloud.npy')
     path = os.path.abspath(".")
 
     for i in range(0, 7):
@@ -21,8 +17,7 @@ def test_run():
             # crop margin 1.5m has lots of problems
             # points = np.load(f'data/door{i}_cropped_m1_5.npy')
 
-
-        response = detect_doorposts_usecase(points, vis=0)
+        response = dpd.doorpost_pose_from_cropped_pointcloud_usecase(points, vis=0)
         print(
             f">>> dataset {i}: success: {response['success']}, poses: {response['poses']}"
         )
@@ -35,8 +30,8 @@ def test_pc1_success():
     points = np.load(full_path)
     # points = np.load(f'{path}/data/door1_cropped_m0_8.npy')
     # points = np.load(f'../../data/door1_cropped_m0_8.npy')
-    response = detect_doorposts_usecase(points, vis=0)
-    assert response["success"] == True
+    response = dpd.doorpost_pose_from_cropped_pointcloud_usecase(points, vis=0)
+    assert response["success"] is True
 
 
 if __name__ == "__main__":

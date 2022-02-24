@@ -1,5 +1,5 @@
 import numpy as np
-import os
+# import os
 import open3d as o3d
 
 from doorpost_detector.utils.converters import npy2pcd
@@ -62,6 +62,4 @@ def get_ground_truth():
 
 
 if __name__ == "__main__":
-    # test_pc1_success()
-    # test_run()
     get_ground_truth()
