@@ -1,6 +1,8 @@
 # Doorpost Detector
 This package contains a pointcloud processing pipeline to estimate the poses of doorposts.
 
+<img src="https://raw.githubusercontent.com/h0uter/doorpost_detector/develop/doorpost_detector_demo.png" alt="alt text" width="700" height="whatever">
+
 
 ## Quick start
 `pip install -r requirements.txt`
@@ -17,7 +19,7 @@ response = dpd.doorpost_pose_from_cropped_pointcloud_usecase(points)
 ```
 
 
-## To obtain doorpost poses from pointcloud
+## To obtain doorpost poses from pointcloud and estimated door location
 ```python
 import doorpost_detector.api as dpd
 
