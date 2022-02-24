@@ -4,14 +4,21 @@ import open3d as o3d
 import copy
 
 
-from doorpost_pose_detector.entry_points.visualize_pipeline import *
-from doorpost_pose_detector.entities.pointcloud_processor import PointcloudProcessor
-from doorpost_pose_detector.utils.utils import npy2pcd
-from doorpost_pose_detector.utils.o3d_arrow import *
+from doorpost_detector.entry_points.visualize_pipeline import *
+from doorpost_detector.entities.pointcloud_processor import PointcloudProcessor
+from doorpost_detector.utils.utils import npy2pcd
+from doorpost_detector.utils.o3d_arrow import *
+
+class Response:
+    def __init__(self, success, poses):
+        self.success = success
+        self.poses = poses
 
 
-# fixme write this to class
-def cropped_pointcloud_to_door_post_poses_usecase(points: list, vis=0):
+# cropped_pointcloud_to_door_post_poses_usecase
+# def detect_doorposts_usecase(points: list, vis=0) -> Response:
+
+def detect_doorposts_usecase(points: list, vis=0):
     debug_statements = False
     success = False
     certainty = 0.0

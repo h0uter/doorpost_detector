@@ -2,8 +2,8 @@ import numpy as np
 import pyransac3d as pyrsc
 import matplotlib.pyplot as plt
 
-from doorpost_pose_detector.utils.o3d_arrow import *
-from doorpost_pose_detector.utils.utils import npy2pcd
+from doorpost_detector.utils.o3d_arrow import *
+from doorpost_detector.utils.utils import npy2pcd
 import open3d as o3d
 
 import logging

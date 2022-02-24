@@ -2,7 +2,7 @@ import numpy as np
 import os
 import open3d as o3d
 
-from doorpost_pose_detector.utils.utils import npy2pcd
+from doorpost_detector.utils.utils import npy2pcd
 
 
 def pick_points(points: list, dataset_idx):

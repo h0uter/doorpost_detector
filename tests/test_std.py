@@ -2,8 +2,8 @@ import numpy as np
 import os
 import pytest
 
-from doorpost_pose_detector.usecases.detect_doorposts_usecase import (
-    cropped_pointcloud_to_door_post_poses_usecase,
+from doorpost_detector.usecases.detect_doorposts_usecase import (
+    detect_doorposts_usecase,
 )
 
 
@@ -20,7 +20,7 @@ def test_pointcloud0_response_poses():
         two_up = os.path.abspath(os.path.join(__file__, "../.."))
         full_path = os.path.join(two_up, "data", "door0_cropped.npy")
         points = np.load(full_path)
-        response = cropped_pointcloud_to_door_post_poses_usecase(points, vis=0)
+        response = detect_doorposts_usecase(points, vis=0)
         print(
             f">>> trial {i}: success: {response['success']}, poses: {response['poses']}"
         )
@@ -47,7 +47,7 @@ def pointcloudN_response_poses(dataset_num, means, acc_x, acc_y):
         two_up = os.path.abspath(os.path.join(__file__, "../.."))
         full_path = os.path.join(two_up, "data", f"door{dataset_num}_cropped_m0_8.npy")
         points = np.load(full_path)
-        response = cropped_pointcloud_to_door_post_poses_usecase(points, vis=1)
+        response = detect_doorposts_usecase(points, vis=0)
         print(
             f">>> trial {i}: success: {response['success']}, poses: {response['poses']}, certainty: {response['certainty']}"
         )
@@ -107,7 +107,7 @@ def test_pointcloud1_response_success():
     two_up = os.path.abspath(os.path.join(__file__, "../.."))
     full_path = os.path.join(two_up, "data", "door1_cropped_m0_8.npy")
     points = np.load(full_path)
-    response = cropped_pointcloud_to_door_post_poses_usecase(points, vis=0)
+    response = detect_doorposts_usecase(points, vis=0)
     assert response["success"] == True
 
 
