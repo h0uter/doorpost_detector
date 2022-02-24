@@ -1,9 +1,9 @@
-import numpy as np
 import os
-import pytest
 
-from doorpost_detector.utils.viz_lvl import VizLVL
+import numpy as np
+import pytest
 from doorpost_detector.api import doorpost_pose_from_cropped_pointcloud_usecase
+from doorpost_detector.utils.viz_lvl import VizLVL
 
 
 def test_pointcloud0_response_poses():

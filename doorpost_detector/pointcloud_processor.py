@@ -8,7 +8,6 @@ import logging
 
 from doorpost_detector.utils.converters import npy2pcd
 
-
 # logging.basicConfig(level=logging.DEBUG)
 logging.basicConfig(level=logging.INFO)
 
@@ -168,15 +167,21 @@ class PointcloudProcessor:
         certainty = angle_1 / (np.pi), angle_2 / (np.pi)
         return certainty
 
-    def find_best_fit_doorposts(self, possible_posts) -> tuple[tuple[float,float], tuple[float,float]]:
+    def find_best_fit_doorposts(
+        self, possible_posts
+    ) -> tuple[tuple[float, float], tuple[float, float]]:
         best_fit_door_post_a, best_fit_door_post_b = None, None
         best_fit_door_width_error = float("Inf")
 
         for posta in possible_posts:
             for postb in possible_posts:
                 # door_width = np.linalg.norm(np.array(posta) - np.array(postb))
-                door_width = np.linalg.norm(np.subtract(np.array(posta), np.array(postb)))
-                logging.debug(f"for post {posta} and {postb} the door width is: {door_width}")
+                door_width = np.linalg.norm(
+                    np.subtract(np.array(posta), np.array(postb))
+                )
+                logging.debug(
+                    f"for post {posta} and {postb} the door width is: {door_width}"
+                )
 
                 # HACK: this is not a good way to get this width
                 # get the doorposts for which the door width is as close to the standard size of a door (0.8) as possible
@@ -186,8 +191,10 @@ class PointcloudProcessor:
                     best_fit_door_post_a = posta
                     if postb != posta:
                         best_fit_door_post_b = postb
-        
-        logging.debug(f"lowest error compared to std doorwidth of 0.8meter: {best_fit_door_width_error}, with posts {best_fit_door_post_a} and {best_fit_door_post_b}")
+
+        logging.debug(
+            f"lowest error compared to std doorwidth of 0.8meter: {best_fit_door_width_error}, with posts {best_fit_door_post_a} and {best_fit_door_post_b}"
+        )
         # assert best_fit_door_post_a is not None
         # assert best_fit_door_post_b is not None
 
